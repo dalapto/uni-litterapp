@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">LITTER</string>
     <string name="title_activity_maps">Map</string>
+    <string name="emailHint">Enter your Email Address...</string>
+    <string name="passwordHint">Enter your Password...</string>
+    <string name="forgotPasswordText">Forgot your password?</string>
+    <string name="loginText">LOGIN</string>
+    <string name="forgotEmailText">Forgot your email address?</string>
 </resources>

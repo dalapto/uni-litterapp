@@ -41,9 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         locationCallback = object : LocationCallback() {
@@ -87,15 +85,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException){
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
                 try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
                     exception.startResolutionForResult(this@MapsActivity,
                             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
                 }
             }
         }
@@ -121,8 +114,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
-
-
 
 
     @SuppressLint("MissingPermission")
@@ -169,10 +160,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         locationPermissionGranted = false
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     locationPermissionGranted = true
                     Log.i(TAG, "We have permissions")
                 }
@@ -189,7 +177,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationResult.addOnCompleteListener(this) { task ->
                     if (task.isSuccessful && task.result != null) {
                         Log.i(TAG, "Setting current location")
-                        // Set the map's camera position to the current location of the device.
                         currentLocation = task.result
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(currentLocation.latitude, currentLocation.longitude), DEFAULT_ZOOM.toFloat()))
                         createMarker(currentLocation)
@@ -197,7 +184,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
-                        //mMap.uiSettings?.isMyLocationButtonEnabled = false
                     }
                 }
             }
