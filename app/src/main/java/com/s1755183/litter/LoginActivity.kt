@@ -26,11 +26,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         private lateinit var auth: FirebaseAuth
         private val TAG: String = "LoginActivity"
 
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_login)
             auth = FirebaseAuth.getInstance()
-            Log.i(TAG, auth.currentUser.toString())
             loginButton = findViewById(R.id.buttonLogin)
             loginButton.setOnClickListener(this)
             forgotPasswordButton = findViewById(R.id.textViewForgotPassword)
@@ -44,10 +44,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        if(auth.currentUser != null){
-            val intent = Intent(this, MapsActivity::class.java)
-            //startActivity(intent)
-            //finish()
+        if(auth.currentUser != null ){
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         auth.signInWithEmailAndPassword(givenEmail, givenPassword).addOnCompleteListener(this@LoginActivity, OnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 Log.i(TAG, "sucessfully logged in")
-                                val intent = Intent(this@LoginActivity, MapsActivity::class.java)
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 Helper.hideProgress(findViewById(R.id.progressBarLogin))
                                 startActivity(intent)
                                 finish()
