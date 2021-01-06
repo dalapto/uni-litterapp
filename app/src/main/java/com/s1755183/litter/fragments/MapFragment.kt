@@ -37,12 +37,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private var locationPermissionGranted: Boolean = false
     private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     private lateinit var locationCallback: LocationCallback
-    private val TAG: String = "MapsActivity"
+    private val TAG: String = "MapFragment"
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

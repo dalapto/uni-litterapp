@@ -2,13 +2,45 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/loginFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <TextView
+        android:id="@+id/textViewCreateAccount"
+        android:layout_width="118dp"
+        android:layout_height="24dp"
+        android:text="@string/create_an_account"
+        android:textAlignment="center"
+        android:textColor="@color/purple_700"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintVertical_bias="0.325" />
+
+    <TextView
+        android:id="@+id/textViewForgotPassword"
+        android:layout_width="144dp"
+        android:layout_height="32dp"
+        android:text="@string/forgotPasswordText"
+        android:textAlignment="center"
+        android:textColor="@color/purple_700"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toStartOf="@+id/guideline8"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="@+id/guideline7"
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintVertical_bias="0.73" />
+
     <EditText
         android:id="@+id/editTextEmail2"
-        android:layout_width="230dp"
-        android:layout_height="39dp"
+        android:layout_width="228dp"
+        android:layout_height="45dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/emailHint"
@@ -16,72 +48,40 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintHorizontal_bias="0.472"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.253" />
-
-    <EditText
-        android:id="@+id/editTextUsername"
-        android:layout_width="184dp"
-        android:layout_height="45dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/username_hint"
-        android:inputType="textEmailAddress"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintHorizontal_bias="0.437"
-        app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.072" />
-
-    <EditText
-        android:id="@+id/editTextConfirmPassword"
-        android:layout_width="213dp"
-        android:layout_height="45dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/confirm_hint"
-        android:inputType="textPassword"
-        android:textAlignment="center"
-        android:imeOptions="actionDone"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
-        app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintHorizontal_bias="0.49"
-        app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.647" />
+        app:layout_constraintVertical_bias="0.114" />
 
     <EditText
         android:id="@+id/editTextPassword2"
         android:layout_width="193dp"
         android:layout_height="44dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/passwordHint"
+        android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
-        app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.456" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmail2" />
 
     <Button
-        android:id="@+id/buttonRegister"
-        android:layout_width="114dp"
+        android:id="@+id/buttonLogin"
+        android:layout_width="100dp"
         android:layout_height="52dp"
-        android:text="@string/register_hint"
+        android:text="@string/loginText"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.907" />
+        app:layout_constraintVertical_bias="0.882" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -95,7 +95,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        app:layout_constraintGuide_percent="0.65" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline7"
@@ -112,21 +119,21 @@
         app:layout_constraintGuide_percent="0.82" />
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="162dp"
-        android:layout_height="37dp"
-        android:text="@string/register_hint"
+        android:id="@+id/textView2"
+        android:layout_width="124dp"
+        android:layout_height="42dp"
+        android:text="@string/loginText"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline3"
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.758" />
+        app:layout_constraintVertical_bias="0.883" />
 
     <ProgressBar
-        android:id="@+id/progressBarRegister"
+        android:id="@+id/progressBarLogin"
         style="?android:attr/progressBarStyle"
         android:layout_width="75dp"
         android:layout_height="60dp"
@@ -135,7 +142,8 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline8"
         app:layout_constraintStart_toStartOf="@+id/guideline7"
         app:layout_constraintTop_toTopOf="@+id/guideline3"
-        app:layout_constraintVertical_bias="0.745"
+        app:layout_constraintVertical_bias="0.513"
         tools:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

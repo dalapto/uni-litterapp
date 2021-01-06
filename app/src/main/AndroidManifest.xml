@@ -32,7 +32,7 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".AuthenticationActivity"
             android:label="Login to Litter">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,23 +40,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SignupActivity"
-            android:parentActivityName=".LoginActivity"
-            android:label="Create an Account">
-                <!-- The meta-data tag is required if you support API level 15 and lower -->
-                <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".LoginActivity" />
-        </activity>
-
-        <activity android:name=".ForgotPasswordActivity"
-            android:parentActivityName=".LoginActivity"
-            android:label="Reset your Password">
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".LoginActivity" />
-        </activity>
 
         <activity android:name=".MainActivity"
             />

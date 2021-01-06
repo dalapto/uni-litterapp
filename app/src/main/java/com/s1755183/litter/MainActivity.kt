@@ -2,12 +2,15 @@ package com.s1755183.litter
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -53,6 +56,9 @@ class MainActivity : FragmentActivity() {
         adapter.addFragment(SettingsFragment(),"Settings")
         viewPager.adapter = adapter
         tabLayout.setupWithViewPager(viewPager)
+        tabLayout.getTabAt(0)!!.setIcon(R.drawable.ic_baseline_map_24)
+        tabLayout.getTabAt(1)!!.setIcon(R.drawable.ic_baseline_mms_24)
+        tabLayout.getTabAt(2)!!.setIcon(R.drawable.ic_baseline_settings_applications_24)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +71,8 @@ class MainActivity : FragmentActivity() {
         auth = FirebaseAuth.getInstance()
         Log.i(TAG, auth.currentUser!!.uid)
     }
+
+
 
 
     private fun getUser(collectionid: String, docid: String): User {

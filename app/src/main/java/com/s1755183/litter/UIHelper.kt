@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 
-class Helper {
+class UIHelper {
     companion object {
         fun displayAlert(context: Context, title: String, message: String) {
             val builder = AlertDialog.Builder(context)
