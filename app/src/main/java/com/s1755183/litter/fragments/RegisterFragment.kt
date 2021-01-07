@@ -64,6 +64,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register), View.OnClickListe
                                     val user = User(auth.uid!!, username)
                                     db.collection("users").document(auth.uid!!).set(user).addOnSuccessListener { Log.i(TAG,"DocumentSnapshot added with ID: ${auth.uid!!}") }
                                     UIHelper.hideProgress(progressBar)
+                                    FirebaseAuth.getInstance().signOut()
                                     parentFragmentManager.beginTransaction().apply {
                                         replace(R.id.frameLayoutAuth,LoginFragment())
                                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

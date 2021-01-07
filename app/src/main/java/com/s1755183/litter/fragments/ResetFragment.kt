@@ -47,6 +47,7 @@ class ResetFragment : Fragment(R.layout.fragment_reset), View.OnClickListener {
                                     builder.setTitle("Reset Email Sent")
                                     builder.setMessage("Please check your email for a link to reset your password.")
                                     builder.setIcon(android.R.drawable.ic_dialog_alert)
+                                    FirebaseAuth.getInstance().signOut()
                                     builder.setPositiveButton("OK") { dialog, which ->
                                         parentFragmentManager.beginTransaction().apply {
                                             replace(R.id.frameLayoutAuth,LoginFragment())

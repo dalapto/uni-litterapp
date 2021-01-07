@@ -11,6 +11,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -35,13 +36,12 @@ import com.s1755183.litter.fragments.SettingsFragment
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
 
-class MainActivity : FragmentActivity() {
+class MainActivity :  AppCompatActivity() {
 
 
     private val TAG: String = "MainActivity"
     private lateinit var auth: FirebaseAuth
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    //lateinit var currentUser: User
     lateinit var tabLayout: TabLayout
     lateinit var mapsTab : TabItem
     lateinit var messagesTab : TabItem
@@ -63,40 +63,17 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance()
+        getUser(db,auth.currentUser!!.uid)
         setContentView(R.layout.activity_main)
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
         setupTabs()
-
-        auth = FirebaseAuth.getInstance()
         Log.i(TAG, auth.currentUser!!.uid)
+        currentUser = lastUser
     }
 
 
-
-
-    private fun getUser(collectionid: String, docid: String): User {
-        val docRef = db.collection(collectionid).document(docid)
-        var uid = ""
-        var uname = ""
-        var urange = 0.0
-        var umess = {}
-        var ukept = {}
-        docRef.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot != null) {
-
-            }
-            else {
-
-            }
-            //uid = documentSnapshot.get("id") as String
-            //uname = documentSnapshot.get("name") as String
-            //urange = documentSnapshot.get("pickup_range") as Double
-            //umess = documentSnapshot.get("my_messages") as List<String>?
-            //ukept = documentSnapshot.get("kept_messages") as List<String>?
-        }
-        return User(uid, uname, urange)
-    }
 
 
 }
