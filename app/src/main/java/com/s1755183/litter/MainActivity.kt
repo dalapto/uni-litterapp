@@ -1,43 +1,27 @@
 package com.s1755183.litter
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.IntentSender
-import android.content.pm.PackageManager
-import android.location.Location
+import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AlertDialog
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.Task
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.s1755183.litter.fragments.MapFragment
 import com.s1755183.litter.fragments.MessagesFragment
+import com.s1755183.litter.fragments.NewMessageFragment
 import com.s1755183.litter.fragments.SettingsFragment
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
 
-class MainActivity :  AppCompatActivity() {
-
+class MainActivity :  AppCompatActivity(), View.OnClickListener {
 
     private val TAG: String = "MainActivity"
     private lateinit var auth: FirebaseAuth
@@ -47,6 +31,9 @@ class MainActivity :  AppCompatActivity() {
     lateinit var messagesTab : TabItem
     lateinit var logoutTab : TabItem
     lateinit var viewPager: ViewPager
+    lateinit var frameLayoutMain: FrameLayout
+    lateinit var newMessageButton: FloatingActionButton
+    lateinit var appBarLayout: AppBarLayout
 
 
     private fun setupTabs(){
@@ -66,14 +53,55 @@ class MainActivity :  AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         getUser(db,auth.currentUser!!.uid)
         setContentView(R.layout.activity_main)
+        frameLayoutMain = findViewById(R.id.frameLayoutMain)
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
+        appBarLayout = findViewById(R.id.appBarLayout)
+        newMessageButton = findViewById(R.id.floatingActionButtonNewMessage)
+        newMessageButton.setOnClickListener(this)
         setupTabs()
         Log.i(TAG, auth.currentUser!!.uid)
         currentUser = lastUser
     }
 
 
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.floatingActionButtonNewMessage -> {
+                /// GET RID OF TAB LAYOUT ALSO
+                viewPager.visibility = View.GONE
+                appBarLayout.visibility = View.GONE
+                newMessageButton.visibility = View.GONE
+                frameLayoutMain.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain, NewMessageFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    commit()
+                }
+            }
+        }
+    }
+    private var newmessage : Message? = null
+    private var imageuri : Uri? = null
+
+    fun saveMessageDetails(title: String, text: String?, anonymous: Boolean, image: String?) {
+        newmessage = Message(title =title, text = text, anonymous =anonymous, image = image)
+    }
+    fun getMessageDetails() : Message? {
+        return newmessage
+    }
+    fun resetMessage() {
+        newmessage = null
+        imageuri = null
+    }
+
+    fun saveImageURI(imageMessage: Uri?) {
+        imageuri = imageMessage
+    }
+
+    fun getImageURI(): Uri? {
+        return imageuri
+    }
 
 
 }

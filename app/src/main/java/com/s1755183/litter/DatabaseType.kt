@@ -2,7 +2,7 @@ package com.s1755183.litter
 
 import android.util.Log
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -67,21 +67,22 @@ data class User(
 
 
 
+data class Message(
+    var title: String? = null,
+    var author_id: String? = null,
+    var location: LatLng = LatLng(0.0,0.0),
+    var text: String? = null,
+    var image: String? = null,
+    var time: Timestamp = Timestamp.now(),
+    var keeps: Int = 0,
+    var views: Int = 0,
+    var anonymous: Boolean = true
+)
+
+
 data class Comment(
         val message_id: String? = null,
         val id: String? = null,
         val author_id: String? = null,
         val text: String? = null
-    )
-
-    data class Message(
-        val id: String? = null,
-        val author_id: String? = null,
-        val location: LatLng = LatLng(0.0,0.0),
-        val title: String? = null,
-        val text: String? = null,
-        val image: String? = null,
-        val keeps: Int = 0,
-        val views: Int = 0,
-        val anonymous: Boolean = true
     )

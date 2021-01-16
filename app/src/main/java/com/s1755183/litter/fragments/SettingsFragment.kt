@@ -20,9 +20,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), View.OnClickListe
     private val TAG: String = "SettingsFragment"
     private lateinit var auth: FirebaseAuth
 
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         auth = FirebaseAuth.getInstance()
         super.onViewCreated(view, savedInstanceState)
