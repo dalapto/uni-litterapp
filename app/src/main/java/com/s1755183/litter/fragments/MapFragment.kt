@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -26,9 +27,14 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.common.collect.BiMap
+import com.google.common.collect.HashBiMap
+import com.s1755183.litter.Message
 import com.s1755183.litter.R
 import com.s1755183.litter.currentUser
 
@@ -39,16 +45,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private lateinit var currentLocation: Location
     private lateinit var locationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val defaultLocation = LatLng(-33.8523341, 151.2106085)
+    private val defaultLocation = LatLng(-55.9431, -3.2010)
     private var locationPermissionGranted: Boolean = false
     private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     private lateinit var locationCallback: LocationCallback
     private val TAG: String = "MapFragment"
-
+    private var markers : HashMap<String, Marker> = HashMap<String, Marker>()
+    private var messages : HashMap<String, Message> = HashMap<String, Message>()
+    private var markermessages : HashBiMap<String, String> = HashBiMap.create()
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        frameLayoutMain = requireActivity().findViewById(R.id.frameLayoutMain)
+        appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
+        newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
 
         val mapFragmentLoad = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragmentLoad.getMapAsync(this)
@@ -61,19 +72,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                         currentLocation = location
                         zoomTo(currentLocation, 15.0f)
                         mMap.setMinZoomPreference(15.0f)
-                        //createMarker(location, "WOOT")
+                        createMarker(currentLocation, "WOOT")
                     }
                 }
+
             }
         }
-        Log.i(TAG, "DONE")
     }
 
     override fun onResume() {
         super.onResume()
         getLocationPermission()
         startLocationUpdates()
-        Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!\")", Toast.LENGTH_LONG).show()
+
     }
 
 
@@ -129,30 +140,57 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
-
+    private lateinit var frameLayoutMain: FrameLayout
+    private lateinit var appBarLayout: AppBarLayout
+    private lateinit var newMessageButton: FloatingActionButton
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         getLocationPermission()
         mMap.isMyLocationEnabled = true
+        mMap.setOnMarkerClickListener { marker ->
+            Log.i(TAG, "MARKER CLICKED")
+            //val message = markermessages[marker.id]
+            // marker = markermessages.inverse()[message.title]
+            newMessageButton.visibility = View.GONE
+            frameLayoutMain.visibility = View.VISIBLE
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.frameLayoutMain,MessageHolderFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                addToBackStack(null)
+                commit()
+            }
+            true
+        }
+
+        Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!\")", Toast.LENGTH_LONG).show()
     }
 
-    private fun createMarker(marker: LatLng, markertext: String = "New Marker") {
-        mMap.addMarker(MarkerOptions().position(marker).title(markertext))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
-    }
 
-    private fun createMarker(loca: Location, markertext: String = "New Marker") {
+    private fun createMarker(loca: Location, title: String = "New Marker") {
         Log.i(TAG, "creating marker")
-        val marker = locationToLngLat(loca)
-        mMap.addMarker(MarkerOptions().position(marker).title(markertext))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
+        val position = locationToLngLat(loca)
+        val marker = mMap.addMarker(MarkerOptions().position(position).title(title))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+        markers[marker.id] = marker
+        //messages[message.title] = message
+        //markermessages[marker.id] = message.title
+    }
+
+    private fun createMarker(position: LatLng, title: String = "New Marker") {
+        Log.i(TAG, "creating marker")
+        val marker = mMap.addMarker(MarkerOptions().position(position).title(title))
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+        markers[marker.id] = marker
+        //messages[message.title] = message
+        //markermessages[marker.id] = message.title
     }
 
     private fun locationToLngLat(location: Location): LatLng {
         return LatLng(location.latitude, location.longitude)
     }
+
 
     private fun getLocationPermission() {
         Log.i(TAG, "Checking Permissions")
@@ -191,51 +229,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         //updateLocationUI()
     }
 
-    private fun getDeviceLocation() {
-        Log.i(TAG, "Getting location")
-        try {
-            if (locationPermissionGranted) {
-                val locationResult = fusedLocationClient.lastLocation
-                locationResult.addOnCompleteListener(this.requireActivity()) { task ->
-                    if (task.isSuccessful && task.result != null) {
-                        Log.i(TAG, "Setting current location")
-                        currentLocation = task.result
-                        mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    currentLocation.latitude,
-                                    currentLocation.longitude
-                                ), DEFAULT_ZOOM.toFloat()
-                            )
-                        )
-                        //createMarker(currentLocation)
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.")
-                        Log.e(TAG, "Exception: %s", task.exception)
-                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
-                    }
-                }
-            }
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
-        }
-    }
-
-
     fun zoomTo(location: Location, zoom: Float) {
-        mMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(
-                    location.latitude,
-                    location.longitude
-                ), zoom
-            )
-        )
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), zoom))
     }
 
-    fun zoomTo(location: LatLng, zoom: Float) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, zoom))
-    }
 
 
 

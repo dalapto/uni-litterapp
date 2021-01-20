@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -33,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
 import java.util.*
@@ -183,19 +186,14 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         getLocationPermission()
     }
 
-    private fun createMarker(marker: LatLng, markertext: String = "New Marker") {
-        val temp = mMap.addMarker(
-            MarkerOptions().position(marker).title(markertext).draggable(true)
-        )
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
-        messageMarker = temp
-    }
-
     private fun createMarker(loca: Location, markertext: String = "New Marker"): Marker {
         Log.i(TAG, "creating marker")
         val marker = locationToLngLat(loca)
+        var mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
+        mIconGenerator.setStyle(IconGenerator.STYLE_PURPLE)
+        var iconBitmap : Bitmap = mIconGenerator.makeIcon(markertext)
         val temp = mMap.addMarker(
-            MarkerOptions().position(marker).title(markertext).draggable(true)
+                MarkerOptions().position(marker).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).title("Are you happy putting your message here?")
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
         return temp
@@ -313,18 +311,17 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
 
                 val randomKey : String = UUID.randomUUID().toString()
                 val storageRef: StorageReference = storageReference.child("images/$randomKey")
-
-                storageRef.putFile(image!!).addOnSuccessListener {
-                        taskSnapshot ->
-                    val downloadUrl = taskSnapshot.task.snapshot.storage.downloadUrl.toString()
-                    val message = Message(image = randomKey, text = messagetext, title = titletext.toLowerCase(), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
-                    db.collection("messages").document(titletext).set(message).addOnSuccessListener {
-                        Log.i(TAG, "DocumentSnapshot added with UID: ${auth.uid}")
+                if (messagetext == "") {
+                    storageRef.putFile(image!!).addOnSuccessListener { taskSnapshot ->
+                        val downloadUrl = taskSnapshot.task.snapshot.storage.downloadUrl.toString()
+                        val message = Message(image = randomKey, text = "", title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
+                        db.collection("messages").document(titletext).set(message)
                     }
-                }.addOnFailureListener {exception ->
-
-                    }
-
+                }
+                else {
+                    val message = Message(image = "", text = messagetext, title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
+                    db.collection("messages").document(titletext).set(message)
+                }
 
                 parentFragmentManager.beginTransaction().apply {
                     replace(R.id.frameLayoutMain, Fragment())

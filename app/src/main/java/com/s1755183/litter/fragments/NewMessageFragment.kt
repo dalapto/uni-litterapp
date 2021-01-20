@@ -203,7 +203,9 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
                 if (isChecked) {
                     Log.i(TAG, "IMAGE CHECKED")
                     imageView.visibility = View.VISIBLE
-                    tapimage.visibility = View.VISIBLE
+                    if (imageMessage == null) {
+                        tapimage.visibility = View.VISIBLE
+                    }
                     message.visibility = View.GONE
                 }
                 else {

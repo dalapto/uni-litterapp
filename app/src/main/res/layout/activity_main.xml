@@ -32,7 +32,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appBarLayout"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="invisible">
 
     </FrameLayout>
 
