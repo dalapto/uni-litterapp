@@ -1,46 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pager"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:visibility="visible">
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButtonNewMessage"
-        android:layout_width="108dp"
-        android:layout_height="130dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
-        android:clickable="true"
-        android:contentDescription="New Message"
-        android:src="@android:drawable/ic_menu_edit"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.93"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.97" />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:visibility="visible">
+
+    </androidx.viewpager.widget.ViewPager>
 
     <FrameLayout
         android:id="@+id/frameLayoutMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appBarLayout"
-        android:visibility="gone"
-        tools:visibility="invisible">
+        android:visibility="gone">
 
     </FrameLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        tools:visibility="visible">
 
 
         <com.google.android.material.tabs.TabLayout
@@ -79,13 +68,5 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/appBarLayout" >
 
-    </androidx.viewpager.widget.ViewPager>
-
-
-</RelativeLayout>
+</FrameLayout>

@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -18,14 +20,18 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentTransaction
+import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -34,11 +40,13 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
+import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.Message
 import com.s1755183.litter.R
 import com.s1755183.litter.currentUser
+import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
-class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
+class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
 
     private val DEFAULT_ZOOM = 15.0f
     private lateinit var mMap: GoogleMap
@@ -53,16 +61,23 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private var markers : HashMap<String, Marker> = HashMap<String, Marker>()
     private var messages : HashMap<String, Message> = HashMap<String, Message>()
     private var markermessages : HashBiMap<String, String> = HashBiMap.create()
+    private lateinit var frameLayoutMain: FrameLayout
+    private lateinit var appBarLayout: AppBarLayout
+    private lateinit var viewPager: ViewPager
+    private lateinit var newMessageButton: FloatingActionButton
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         frameLayoutMain = requireActivity().findViewById(R.id.frameLayoutMain)
+        viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
-        newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
+        newMessageButton = view.findViewById(R.id.floatingActionButtonNewMessage)
+        newMessageButton.setOnClickListener(this)
 
         val mapFragmentLoad = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragmentLoad.getMapAsync(this)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
@@ -140,23 +155,25 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
-    private lateinit var frameLayoutMain: FrameLayout
-    private lateinit var appBarLayout: AppBarLayout
-    private lateinit var newMessageButton: FloatingActionButton
+
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
         getLocationPermission()
         mMap.isMyLocationEnabled = true
         mMap.setOnMarkerClickListener { marker ->
             Log.i(TAG, "MARKER CLICKED")
             //val message = markermessages[marker.id]
             // marker = markermessages.inverse()[message.title]
+            viewPager.visibility = View.GONE
+            appBarLayout.visibility = View.GONE
             newMessageButton.visibility = View.GONE
             frameLayoutMain.visibility = View.VISIBLE
+
             parentFragmentManager.beginTransaction().apply {
-                replace(R.id.frameLayoutMain,MessageHolderFragment())
+                replace(R.id.frameLayoutMain,ViewMessageFragment())
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 addToBackStack(null)
                 commit()
@@ -164,14 +181,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             true
         }
 
-        Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!\")", Toast.LENGTH_LONG).show()
+        Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!", Toast.LENGTH_LONG).show()
     }
 
 
     private fun createMarker(loca: Location, title: String = "New Marker") {
         Log.i(TAG, "creating marker")
         val position = locationToLngLat(loca)
-        val marker = mMap.addMarker(MarkerOptions().position(position).title(title))
+        val mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
+        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+        val iconBitmap : Bitmap = mIconGenerator.makeIcon(title)
+        val marker = mMap.addMarker(
+                MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
+        )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
         markers[marker.id] = marker
         //messages[message.title] = message
@@ -233,7 +255,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), zoom))
     }
 
-
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.floatingActionButtonNewMessage -> {
+                /// GET RID OF TAB LAYOUT ALSO
+                viewPager.visibility = View.GONE
+                appBarLayout.visibility = View.GONE
+                newMessageButton.visibility = View.GONE
+                frameLayoutMain.visibility = View.VISIBLE
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain, NewMessageFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    commit()
+                }
+            }
+        }
+    }
 
 
 }

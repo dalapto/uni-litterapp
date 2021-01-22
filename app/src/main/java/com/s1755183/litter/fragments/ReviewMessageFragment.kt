@@ -43,7 +43,6 @@ import java.util.*
 
 class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapReadyCallback, View.OnClickListener {
 
-    private val DEFAULT_ZOOM = 15.0f
     private lateinit var mMap: GoogleMap
     private lateinit var currentLocation: Location
     private lateinit var locationRequest: LocationRequest
@@ -106,10 +105,6 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                             messageMarker = createMarker(currentLocation, titletext)
                             messageMarker!!.showInfoWindow()
                         }
-                        /*else {
-                            messageMarker!!.position = LatLng(currentLocation.latitude,currentLocation.longitude)
-                            messageMarker!!.showInfoWindow()
-                        }*/
                     }
                 }
             }
@@ -137,11 +132,6 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         val client: SettingsClient = LocationServices.getSettingsClient(this.requireContext())
         val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
-        task.addOnSuccessListener { locationSettingsResponse ->
-            // All location settings are satisfied. The client can initialize
-            // location requests here.
-            // ...
-        }
 
         task.addOnFailureListener { exception ->
             if (exception is ResolvableApiException) {
@@ -189,9 +179,9 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
     private fun createMarker(loca: Location, markertext: String = "New Marker"): Marker {
         Log.i(TAG, "creating marker")
         val marker = locationToLngLat(loca)
-        var mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
-        mIconGenerator.setStyle(IconGenerator.STYLE_PURPLE)
-        var iconBitmap : Bitmap = mIconGenerator.makeIcon(markertext)
+        val mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
+        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+        val iconBitmap : Bitmap = mIconGenerator.makeIcon(markertext)
         val temp = mMap.addMarker(
                 MarkerOptions().position(marker).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).title("Are you happy putting your message here?")
         )
@@ -237,39 +227,9 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                 }
             }
         }
-        //updateLocationUI()
     }
 
-    private fun getDeviceLocation() {
-        Log.i(TAG, "Getting location")
-        try {
-            if (locationPermissionGranted) {
-                val locationResult = fusedLocationClient.lastLocation
-                locationResult.addOnCompleteListener(this.requireActivity()) { task ->
-                    if (task.isSuccessful && task.result != null) {
-                        Log.i(TAG, "Setting current location")
-                        currentLocation = task.result
-                        mMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    currentLocation.latitude,
-                                    currentLocation.longitude
-                                ), DEFAULT_ZOOM.toFloat()
-                            )
-                        )
-                        //zoomTo(currentLocation,15.0f)
-                        //createMarker(currentLocation,"TITLE")
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.")
-                        Log.e(TAG, "Exception: %s", task.exception)
-                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
-                    }
-                }
-            }
-        } catch (e: SecurityException) {
-            Log.e("Exception: %s", e.message, e)
-        }
-    }
+
 
 
     fun zoomTo(location: Location, zoom: Float) {
@@ -283,9 +243,6 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         )
     }
 
-    fun zoomTo(location: LatLng, zoom: Float) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, zoom))
-    }
 
 
     override fun onClick(v: View?) {
@@ -315,12 +272,12 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                     storageRef.putFile(image!!).addOnSuccessListener { taskSnapshot ->
                         val downloadUrl = taskSnapshot.task.snapshot.storage.downloadUrl.toString()
                         val message = Message(image = randomKey, text = "", title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
-                        db.collection("messages").document(titletext).set(message)
+                        db.collection("messages").document(titletext.toLowerCase(Locale.ROOT)).set(message)
                     }
                 }
                 else {
                     val message = Message(image = "", text = messagetext, title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
-                    db.collection("messages").document(titletext).set(message)
+                    db.collection("messages").document(titletext.toLowerCase(Locale.ROOT)).set(message)
                 }
 
                 parentFragmentManager.beginTransaction().apply {

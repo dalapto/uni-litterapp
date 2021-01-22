@@ -20,7 +20,8 @@
             android:visibility="invisible"
             app:icon="@drawable/abc_vector_test"
             app:iconSize="28dp"
-            tools:text="Back" />
+            tools:text="Back"
+            tools:visibility="visible" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

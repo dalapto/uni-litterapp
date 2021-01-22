@@ -5,9 +5,26 @@
     android:id="@+id/fragmentViewMessage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00FFFFFF"
-    android:backgroundTint="#00FFFFFF"
+    android:background="#49A84B"
     tools:context=".fragments.NewMessageFragment">
+
+    <Button
+        android:id="@+id/buttonBackView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textAlignment="textStart"
+        android:textSize="12sp"
+        android:visibility="visible"
+        app:icon="@drawable/abc_vector_test"
+        app:iconSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.062"
+        tools:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -27,94 +44,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.16" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95" />
+        app:layout_constraintGuide_percent="0.84" />
 
     <TextView
         android:id="@+id/textViewMessageTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:text="TITLE IN HERE"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.052"
-        tools:text="TITLE IN HERE" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline5"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.155" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline6"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.1575" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline12"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.17" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline13"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.6775" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline11"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.67" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline14"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.675" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.79" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline15"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:visibility="visible"
-        app:layout_constraintGuide_percent="0.96" />
+        app:layout_constraintVertical_bias="0.206" />
 
     <TextView
         android:id="@+id/textViewMessageAuthor"
@@ -124,10 +77,79 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.123" />
+        app:layout_constraintVertical_bias="0.25" />
+
+    <TextView
+        android:id="@+id/textViewMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TIME AND DATE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.171"
+        tools:text="TIME AND DATE" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.2875" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.29" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.3" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.74" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline11"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.73" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline15"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.98" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -141,19 +163,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline9"
         app:layout_constraintTop_toTopOf="@+id/guideline14"
         app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/textViewMessageTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.212"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023"
-        tools:text="TIME AND DATE" />
 
     <FrameLayout
         android:id="@+id/frameNewMessageContent"
@@ -176,52 +185,13 @@
             android:id="@+id/textViewMessageText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#0047916A"
             android:ems="10"
             android:gravity="center_horizontal|center_vertical"
             android:textAlignment="gravity"
             android:textSize="24sp"
             android:visibility="visible" />
     </FrameLayout>
-
-    <TextView
-        android:id="@+id/textViewMessageViewcount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.123"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.712"
-        tools:text="Views 0" />
-
-    <TextView
-        android:id="@+id/textViewKeeps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Keeps 0"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.87"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.712" />
-
-    <ToggleButton
-        android:id="@+id/toggleButtonKeep"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="false"
-        android:textOff="Left"
-        android:textOn="Kept"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.752" />
 
     <FrameLayout
         android:id="@+id/commentsSpace"
@@ -233,6 +203,80 @@
         app:layout_constraintTop_toTopOf="@+id/guideline2">
 
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/textViewKeep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Leave Message"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.779" />
+
+    <TextView
+        android:id="@+id/textViewMessageViewcount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Views 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.189"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.786" />
+
+    <TextView
+        android:id="@+id/textViewKeeps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Keeps 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.813"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.786" />
+
+    <Switch
+        android:id="@+id/switchKeep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:thumbTint="#5E35B1"
+        android:trackTint="#5E35B1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.823" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline14"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintGuide_percent="0.7375" />
+
+    <TextView
+        android:id="@+id/textViewEditMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit"
+        android:textColor="@color/purple_700"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.945"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.203" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

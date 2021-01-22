@@ -32,12 +32,12 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switch: Switch
     private lateinit var checkBox: CheckBox
-    private lateinit var time: TextView
     private lateinit var imageView: ImageView
+    private lateinit var time: TextView
     private lateinit var author: TextView
-    private lateinit var tapimage: TextView
     private lateinit var title: EditText
     private lateinit var message: EditText
+    private lateinit var tapimage: TextView
     private lateinit var viewPager: ViewPager
     private lateinit var frameLayoutMain: FrameLayout
     private lateinit var appBarLayout: AppBarLayout
@@ -129,7 +129,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
                     UIHelper.displayAlert(this.requireContext(),"Empty Message","Please enter a Title for your message.")
                 }
                 else {
-                    db.collection("messages").document(titleText).get().addOnSuccessListener { document ->
+                    db.collection("messages").document(titleText.toLowerCase(Locale.ROOT)).get().addOnSuccessListener { document ->
                         if (!document.exists()) {
                             var imagetext = ""
                             Log.i(TAG,(switch.isChecked).toString())

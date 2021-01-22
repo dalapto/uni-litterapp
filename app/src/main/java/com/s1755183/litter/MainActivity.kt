@@ -21,7 +21,7 @@ import com.s1755183.litter.fragments.SettingsFragment
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
 
-class MainActivity :  AppCompatActivity(), View.OnClickListener {
+class MainActivity :  AppCompatActivity() {
 
     private val TAG: String = "MainActivity"
     private lateinit var auth: FirebaseAuth
@@ -32,7 +32,6 @@ class MainActivity :  AppCompatActivity(), View.OnClickListener {
     lateinit var logoutTab : TabItem
     lateinit var viewPager: ViewPager
     lateinit var frameLayoutMain: FrameLayout
-    lateinit var newMessageButton: FloatingActionButton
     lateinit var appBarLayout: AppBarLayout
 
 
@@ -57,30 +56,14 @@ class MainActivity :  AppCompatActivity(), View.OnClickListener {
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
         appBarLayout = findViewById(R.id.appBarLayout)
-        newMessageButton = findViewById(R.id.floatingActionButtonNewMessage)
-        newMessageButton.setOnClickListener(this)
+
         setupTabs()
         Log.i(TAG, auth.currentUser!!.uid)
         currentUser = lastUser
     }
 
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.floatingActionButtonNewMessage -> {
-                /// GET RID OF TAB LAYOUT ALSO
-                viewPager.visibility = View.GONE
-                appBarLayout.visibility = View.GONE
-                newMessageButton.visibility = View.GONE
-                frameLayoutMain.visibility = View.VISIBLE
-                supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayoutMain, NewMessageFragment())
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    commit()
-                }
-            }
-        }
-    }
+
     private var newmessage : Message? = null
     private var imageuri : Uri? = null
 
