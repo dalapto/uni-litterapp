@@ -40,10 +40,11 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.maps.android.ui.IconGenerator
-import com.s1755183.litter.Message
+import com.s1755183.litter.*
 import com.s1755183.litter.R
-import com.s1755183.litter.currentUser
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
@@ -51,6 +52,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private val DEFAULT_ZOOM = 15.0f
     private lateinit var mMap: GoogleMap
     private lateinit var currentLocation: Location
+    private var lastLocation: Location? = null
     private lateinit var locationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val defaultLocation = LatLng(-55.9431, -3.2010)
@@ -65,6 +67,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var viewPager: ViewPager
     private lateinit var newMessageButton: FloatingActionButton
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,15 +87,39 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     if (location != null) {
+                        if (lastLocation == null) {
+                            zoomTo(location, 15.0f)
+                        }
                         currentLocation = location
-                        zoomTo(currentLocation, 15.0f)
-                        mMap.setMinZoomPreference(15.0f)
-                        createMarker(currentLocation, "WOOT")
+                        lastLocation = location
+                        //mMap.setMinZoomPreference(15.0f)
+                        db.collection("messages").get().addOnSuccessListener { result ->
+                            val temp = result.documents.toMutableList()
+                            for (doc in temp) {
+                                val hlocation = doc.data?.get("location") as HashMap<String,Double>
+                                val location2 = LatLng(hlocation["latitude"]!!,hlocation["longitude"]!!) as LatLng
+                                if (checkDistance(location2,locationToLngLat(currentLocation),10.0)) {
+                                    val title = doc.data?.get("title") as String
+                                    val author = doc.data?.get("author_id") as String
+                                    val image = doc.data?.get("image") as String
+                                    val text = doc.data?.get("text") as String
+                                    val time = doc.data?.get("time").toString()
+                                    val views = (doc.data?.get("views") as Long).toInt()
+                                    val keeps = (doc.data?.get("keeps") as Long).toInt()
+                                    val anonymous = doc.data?.get("anonymous") as Boolean
+                                    messages[title] = Message(title=title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                                }
+                            }
+                            for (msg in messages) {
+                                createMarker(msg.value.location, msg.key)
+                            }
+                        }
                     }
                 }
 
             }
         }
+
     }
 
     override fun onResume() {
@@ -104,7 +131,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
 
 
     private fun createLocationRequest() {
-        Log.i(TAG, "creating location request")
         locationRequest = LocationRequest.create().apply {
             interval = 10000
             fastestInterval = 5000
@@ -137,9 +163,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
-        Log.i(TAG, "Starting location updates")
         createLocationRequest()
-        Log.i(TAG, "location request created")
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -160,7 +184,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
         getLocationPermission()
         mMap.isMyLocationEnabled = true
         mMap.setOnMarkerClickListener { marker ->
@@ -171,6 +194,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             appBarLayout.visibility = View.GONE
             newMessageButton.visibility = View.GONE
             frameLayoutMain.visibility = View.VISIBLE
+            (activity as MainActivity?)!!.saveMessage(messages[markermessages[marker.id]]!!)
 
             parentFragmentManager.beginTransaction().apply {
                 replace(R.id.frameLayoutMain,ViewMessageFragment())
@@ -182,6 +206,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         }
 
         Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!", Toast.LENGTH_LONG).show()
+
     }
 
 
@@ -194,19 +219,28 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         val marker = mMap.addMarker(
                 MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
         )
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
         markers[marker.id] = marker
+        markermessages[marker.id] = title
         //messages[message.title] = message
-        //markermessages[marker.id] = message.title
     }
 
     private fun createMarker(position: LatLng, title: String = "New Marker") {
-        Log.i(TAG, "creating marker")
-        val marker = mMap.addMarker(MarkerOptions().position(position).title(title))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
-        markers[marker.id] = marker
-        //messages[message.title] = message
-        //markermessages[marker.id] = message.title
+        if (markermessages.containsValue(title)) {
+            markers[markermessages.inverse()[title]]!!.position = position
+        }
+        else {
+            val mIconGenerator: IconGenerator = IconGenerator(this.requireContext())
+            mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+            val iconBitmap: Bitmap = mIconGenerator.makeIcon(title)
+            val marker = mMap.addMarker(
+                    MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
+            )
+            markers[marker.id] = marker
+            Log.i(TAG,marker.id)
+            Log.i(TAG,title)
+            markermessages[marker.id] = title
+        }
     }
 
     private fun locationToLngLat(location: Location): LatLng {
@@ -271,6 +305,5 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             }
         }
     }
-
 
 }

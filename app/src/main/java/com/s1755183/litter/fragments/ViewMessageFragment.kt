@@ -1,50 +1,26 @@
 package com.s1755183.litter.fragments
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
-import android.content.Intent
-import android.content.IntentSender
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.location.Location
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Looper
-import android.text.Editable
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
-import java.net.URI
+import java.io.File
 import java.util.*
 
 
@@ -70,11 +46,14 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var storage: FirebaseStorage
     private lateinit var storageReference: StorageReference
+    private lateinit var msg: Message
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        msg = (activity as MainActivity?)!!.getMessageDetails()!!
+        getUser(db, msg.author_id!!)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
@@ -95,6 +74,31 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
+        Log.i(TAG, msg.time)
+        title.text = msg.title
+        time.text = msg.time
+        if (msg.anonymous) {
+            author.text = "Anonymous Individual"
+        }
+        else {
+            author.text = lastUser.name
+        }
+        keeps.text = "Keeps "+ msg.keeps.toString()
+        viewcount.text = "Views "+msg.views.toString()
+        if (msg.text == "") {
+            message.text = ""
+
+//            val imageRef = storageReference.child("images/${msg.image}")
+//            imageRef.getFile(File.createTempFile("images", "jpg")).addOnSuccessListener {
+//                taskSnapshot -> val ace = taskSnapshot?.storage?.downloadUrl?.result
+//                if (ace != null) {
+//                    imageView.setImageURI(ace)
+//                }
+//            }
+        }
+        else {
+            message.text = msg.text
+        }
 
     }
 

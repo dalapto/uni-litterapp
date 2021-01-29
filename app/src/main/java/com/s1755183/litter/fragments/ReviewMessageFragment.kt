@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -73,7 +74,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
-        storageReference = storage. reference
+        storageReference = storage.reference
         backButton = view.findViewById(R.id.buttonBack)
         backButton.setOnClickListener(this)
         postButton = view.findViewById(R.id.buttonPost)
@@ -172,6 +173,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.isMyLocationEnabled = true
         mMap.setMinZoomPreference(15.0f)
         getLocationPermission()
     }

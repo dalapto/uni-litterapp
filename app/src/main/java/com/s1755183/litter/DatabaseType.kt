@@ -4,6 +4,9 @@ import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import java.lang.Math.pow
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 data class User(
@@ -73,11 +76,16 @@ data class Message(
     var location: LatLng = LatLng(0.0,0.0),
     var text: String? = null,
     var image: String? = null,
-    var time: Timestamp = Timestamp.now(),
+    var time: String = Timestamp.now().toDate().toString(),
     var keeps: Int = 0,
     var views: Int = 0,
     var anonymous: Boolean = true
 )
+
+
+    fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
+        return sqrt((messageLoc.latitude - currentLoc.latitude).pow(2) + (messageLoc.longitude - currentLoc.longitude).pow(2)) <= maxDistance
+    }
 
 
 data class Comment(

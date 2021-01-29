@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/reviewFragment"
+    android:id="@+id/mapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.MapFragment">
@@ -14,13 +14,16 @@
         android:clickable="true"
         android:contentDescription="New Message"
         android:src="@android:drawable/ic_menu_edit"
+        android:tint="#43A047"
         android:visibility="visible"
+        app:backgroundTint="#43A047"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.904"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.951" />
+        app:layout_constraintVertical_bias="0.951"
+        app:rippleColor="#43A047" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
