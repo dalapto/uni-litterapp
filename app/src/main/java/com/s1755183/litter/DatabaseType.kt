@@ -43,30 +43,8 @@ data class User(
         }
     }
 
-    var lastUser: User = User("nameless","idless",0.0, emptyList(), emptyList())
-    lateinit var currentUser: User
-    fun getUser(db: FirebaseFirestore, userid : String) {
-        val docRef = db.collection("users").document(userid)
-        docRef.get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        Log.d("DatabaseType", "Document data: ${document.data}")
-                        lastUser.id = document.data?.get("id") as String
-                        lastUser.name = document.data?.get("name") as String
-                        lastUser.pickup_range = document.data?.get("pickup_range") as Double
-                        lastUser.my_messages = stringToList(document.data?.get("my_messages") as String?)
-                        lastUser.kept_messages = stringToList(document.data?.get("kept_messages") as String?)
-                        Log.d("DatabaseType", "${lastUser.id} + ${lastUser.name}")
-                    }
-                    else {
-                        Log.d("DatabaseType", "no user found")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d("DatabaseType", "User get failed with ", exception)
-                }
-    }
 
+    var currentUser: User = User("","",0.0, emptyList(), emptyList())
 
 
 

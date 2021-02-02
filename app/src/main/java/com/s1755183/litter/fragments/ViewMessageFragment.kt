@@ -1,11 +1,17 @@
 package com.s1755183.litter.fragments
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
@@ -53,7 +59,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         msg = (activity as MainActivity?)!!.getMessageDetails()!!
-        getUser(db, msg.author_id!!)
+        //getUser(db, msg.author_id!!)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
@@ -77,29 +83,33 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         Log.i(TAG, msg.time)
         title.text = msg.title
         time.text = msg.time
+        keeps.text = "Keeps "+ msg.keeps.toString()
+        viewcount.text = "Views "+(1+msg.views).toString()
+        if (msg.text == "") {
+            message.text = ""
+            imageView.visibility = View.VISIBLE
+            Log.i(TAG, "GETTING IMAGE")
+            storageReference.child("images/${msg.image}").getBytes((7L*1024*1024)).addOnSuccessListener{
+                bytes -> imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes,0,bytes.size))
+                Log.i(TAG, "SET IMAGE")
+            }
+            message.visibility = View.INVISIBLE
+        }
+        else {
+            message.text = msg.text
+            message.visibility = View.VISIBLE
+            imageView.visibility = View.INVISIBLE
+        }
         if (msg.anonymous) {
             author.text = "Anonymous Individual"
         }
         else {
-            author.text = lastUser.name
+            db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document ->
+                if (document != null) {
+                    author.text = document.data?.get("name") as String
+                }
+            }
         }
-        keeps.text = "Keeps "+ msg.keeps.toString()
-        viewcount.text = "Views "+msg.views.toString()
-        if (msg.text == "") {
-            message.text = ""
-
-//            val imageRef = storageReference.child("images/${msg.image}")
-//            imageRef.getFile(File.createTempFile("images", "jpg")).addOnSuccessListener {
-//                taskSnapshot -> val ace = taskSnapshot?.storage?.downloadUrl?.result
-//                if (ace != null) {
-//                    imageView.setImageURI(ace)
-//                }
-//            }
-        }
-        else {
-            message.text = msg.text
-        }
-
     }
 
 
@@ -109,6 +119,8 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         when (v?.id) {
             R.id.buttonBackView -> {
                 Log.i(TAG, "BACK CLICKED")
+                (db.collection("messages").document(msg.title.toString())).update("views",(1+msg.views).toLong())
+                val details = (activity as MainActivity?)!!.resetMessage()
                 viewPager.visibility = View.VISIBLE
                 appBarLayout.visibility = View.VISIBLE
                 newMessageButton.visibility = View.VISIBLE

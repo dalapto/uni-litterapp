@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="sjae" pattern="(!src[LITTER.app]:com.s1755183.litter.fragments.ViewMessageFragment&amp;&amp;!src[LITTER.app]:com.s1755183.litter.fragments.EditMessageFragment||src[LITTER.app]:com.s1755183.litter.fragments.NewMessageFragment)&amp;&amp;!src[LITTER.app]:layout.*" />
+</component>

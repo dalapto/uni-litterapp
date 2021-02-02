@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -182,7 +183,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         Log.i(TAG, "creating marker")
         val marker = locationToLngLat(loca)
         val mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
-        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+        mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
         val iconBitmap : Bitmap = mIconGenerator.makeIcon(markertext)
         val temp = mMap.addMarker(
                 MarkerOptions().position(marker).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).title("Are you happy putting your message here?")
@@ -281,7 +282,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                     val message = Message(image = "", text = messagetext, title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
                     db.collection("messages").document(titletext.toLowerCase(Locale.ROOT)).set(message)
                 }
-
+                Toast.makeText(this.requireContext(),"Sucessfully created new message.", Toast.LENGTH_LONG).show()
                 parentFragmentManager.beginTransaction().apply {
                     replace(R.id.frameLayoutMain, Fragment())
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

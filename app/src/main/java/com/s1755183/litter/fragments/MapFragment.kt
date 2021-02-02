@@ -62,6 +62,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private val TAG: String = "MapFragment"
     private var markers : HashMap<String, Marker> = HashMap<String, Marker>()
     private var messages : HashMap<String, Message> = HashMap<String, Message>()
+    private var our_messages : HashMap<String, Message> = HashMap<String, Message>()
     private var markermessages : HashBiMap<String, String> = HashBiMap.create()
     private lateinit var frameLayoutMain: FrameLayout
     private lateinit var appBarLayout: AppBarLayout
@@ -107,11 +108,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                                     val views = (doc.data?.get("views") as Long).toInt()
                                     val keeps = (doc.data?.get("keeps") as Long).toInt()
                                     val anonymous = doc.data?.get("anonymous") as Boolean
-                                    messages[title] = Message(title=title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                                    if (author== currentUser.id) {
+                                        our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                                    }
+                                    else {
+                                        messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                                    }
                                 }
                             }
                             for (msg in messages) {
                                 createMarker(msg.value.location, msg.key)
+                            }
+                            for (msg in our_messages) {
+                                createMarker(msg.value.location, msg.key, true)
                             }
                         }
                     }
@@ -194,44 +203,46 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             appBarLayout.visibility = View.GONE
             newMessageButton.visibility = View.GONE
             frameLayoutMain.visibility = View.VISIBLE
-            (activity as MainActivity?)!!.saveMessage(messages[markermessages[marker.id]]!!)
 
-            parentFragmentManager.beginTransaction().apply {
-                replace(R.id.frameLayoutMain,ViewMessageFragment())
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                addToBackStack(null)
-                commit()
+            if (messages[markermessages[marker.id]] != null) {
+                (activity as MainActivity?)!!.saveMessage(messages[markermessages[marker.id]]!!)
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain,ViewMessageFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+            else {
+                (activity as MainActivity?)!!.saveMessage(our_messages[markermessages[marker.id]]!!)
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain,EditMessageFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    addToBackStack(null)
+                    commit()
+                }
             }
             true
         }
 
-        Toast.makeText(this.requireContext(), "Welcome ${currentUser.name}!", Toast.LENGTH_LONG).show()
 
     }
 
 
-    private fun createMarker(loca: Location, title: String = "New Marker") {
-        Log.i(TAG, "creating marker")
-        val position = locationToLngLat(loca)
-        val mIconGenerator : IconGenerator = IconGenerator(this.requireContext())
-        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
-        val iconBitmap : Bitmap = mIconGenerator.makeIcon(title)
-        val marker = mMap.addMarker(
-                MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
-        )
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
-        markers[marker.id] = marker
-        markermessages[marker.id] = title
-        //messages[message.title] = message
-    }
 
-    private fun createMarker(position: LatLng, title: String = "New Marker") {
+
+    private fun createMarker(position: LatLng, title: String = "New Marker", author: Boolean = false) {
         if (markermessages.containsValue(title)) {
             markers[markermessages.inverse()[title]]!!.position = position
         }
         else {
             val mIconGenerator: IconGenerator = IconGenerator(this.requireContext())
-            mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+            if (author) {
+                mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+            }
+            else {
+                mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+            }
             val iconBitmap: Bitmap = mIconGenerator.makeIcon(title)
             val marker = mMap.addMarker(
                     MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))

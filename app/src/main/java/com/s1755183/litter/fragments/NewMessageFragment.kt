@@ -4,14 +4,10 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentTransaction
@@ -22,7 +18,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.s1755183.litter.*
-import java.net.URI
 import java.util.*
 
 
@@ -54,22 +49,22 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         auth = FirebaseAuth.getInstance()
         super.onViewCreated(view, savedInstanceState)
-        nextbutton = view.findViewById(R.id.buttonNewMessageNext)
+        nextbutton = view.findViewById(R.id.buttonMessageNext)
         nextbutton.setOnClickListener(this)
-        backbutton = view.findViewById(R.id.buttonNewMesssageCancel)
+        backbutton = view.findViewById(R.id.buttonMessageCancel)
         backbutton.setOnClickListener(this)
         switch = view.findViewById(R.id.switchImage)
         switch.setOnCheckedChangeListener(this)
-        checkBox = view.findViewById(R.id.checkBoxPost)
+        checkBox = view.findViewById(R.id.checkBoxViewPost)
         checkBox.setOnCheckedChangeListener(this)
-        imageView = view.findViewById(R.id.imageViewNewMessage)
+        imageView = view.findViewById(R.id.imageViewMessage)
         imageView.setOnClickListener(this)
-        title = view.findViewById(R.id.editTextNewTitle)
-        message = view.findViewById(R.id.editTextNewMesssageText)
+        title = view.findViewById(R.id.editTextTitle)
+        message = view.findViewById(R.id.editTextMesssageText)
         tapimage = view.findViewById(R.id.textViewTapImage)
-        time = view.findViewById(R.id.textViewNewMessageTime)
+        time = view.findViewById(R.id.textViewTime)
         time.text = Timestamp.now().toDate().toString()
-        author = view.findViewById(R.id.textViewNewMessageAuthor)
+        author = view.findViewById(R.id.textViewNewAuthor)
         author.text = currentUser.name
         frameLayoutMain = requireActivity().findViewById(R.id.frameLayoutMain)
         viewPager = requireActivity().findViewById(R.id.viewPager)
@@ -99,7 +94,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
     override fun onClick(v: View?) {
 
         when (v?.id) {
-            R.id.buttonNewMesssageCancel -> {
+            R.id.buttonMessageCancel -> {
                 Log.i(TAG, "CANCEL CLICKED")
                 val builder = AlertDialog.Builder(this.requireContext())
                 builder.setTitle("Cancel Posting New Message")
@@ -122,7 +117,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
                 alertDialog.setCancelable(false)
                 alertDialog.show()
             }
-            R.id.buttonNewMessageNext -> {
+            R.id.buttonMessageNext -> {
                 titleText = title.text.toString()
                 messageText = message.text.toString()
                 if (titleText == "") {
@@ -164,7 +159,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
                     }
                 }
             }
-            R.id.imageViewNewMessage -> {
+            R.id.imageViewMessage -> {
                 Log.i(TAG, "IMAGE VIEW CLICKED")
                 val intent = Intent()
                 intent.type = "image/*"
@@ -189,7 +184,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when (buttonView?.id) {
-            R.id.checkBoxPost -> {
+            R.id.checkBoxViewPost -> {
                 if (isChecked) {
                     Log.i(TAG, "ANONYMOUS CHECKED")
                     author.text = ("Anonymous " + "Individual")

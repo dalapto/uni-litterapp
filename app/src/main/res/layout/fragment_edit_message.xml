@@ -5,9 +5,34 @@
     android:id="@+id/fragmentNewMessage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:backgroundTint="#BC353BB1"
+    android:background="#E91E88E5"
     tools:context=".fragments.NewMessageFragment">
+
+    <TextView
+        android:id="@+id/textViewEditKeeps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Keeps 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.847"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.291" />
+
+    <TextView
+        android:id="@+id/textViewEditMessageViewcount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Views 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.177"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.291" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -36,23 +61,35 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.95" />
 
-    <EditText
-        android:id="@+id/editTextTitle"
+    <TextView
+        android:id="@+id/textViewEditTitle"
         android:layout_width="368dp"
         android:layout_height="56dp"
-        android:background="@color/common_google_signin_btn_text_dark_disabled"
         android:ems="10"
-        android:hint="Enter the Title of your message..."
+        android:gravity="center"
         android:imeOptions="actionDone"
         android:inputType="textPersonName"
+        android:text="TITLE"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.052" />
+        app:layout_constraintVertical_bias="0.074" />
+
+    <TextView
+        android:id="@+id/textViewEditMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TIME"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.044" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -103,7 +140,7 @@
         app:layout_constraintGuide_percent="0.82" />
 
     <CheckBox
-        android:id="@+id/checkBoxViewPost"
+        android:id="@+id/checkBoxEditPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Post anonymously"
@@ -115,7 +152,7 @@
         app:layout_constraintVertical_bias="0.202" />
 
     <TextView
-        android:id="@+id/textViewNewAuthor"
+        android:id="@+id/textViewEditMessageAuthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="From Author"
@@ -140,20 +177,8 @@
         app:layout_constraintTop_toTopOf="@+id/guideline14"
         app:layout_constraintVertical_bias="1.0" />
 
-    <TextView
-        android:id="@+id/textViewTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TIME"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.105"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.022" />
-
     <Switch
-        android:id="@+id/switchImage"
+        android:id="@+id/switchEditImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Text"
@@ -191,7 +216,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline12">
 
         <ImageView
-            android:id="@+id/imageViewMessage"
+            android:id="@+id/imageViewEditMessage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#FFFFFF"
@@ -199,13 +224,13 @@
             android:visibility="gone" />
 
         <EditText
-            android:id="@+id/editTextMesssageText"
+            android:id="@+id/editTextEditMesssageText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/common_google_signin_btn_text_dark_disabled"
             android:ems="10"
             android:gravity="center_horizontal|center_vertical"
-            android:hint="Enter your message here!"
+            android:hint="Your message here!"
             android:imeOptions="actionDone"
             android:inputType="textPersonName"
             android:textAlignment="gravity"
@@ -214,33 +239,47 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/buttonMessageNext"
+        android:id="@+id/buttonEditMessageUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Next"
-        app:icon="@android:drawable/ic_menu_directions"
+        android:text="Update"
+        app:icon="@android:drawable/stat_sys_upload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.715"
+        app:layout_constraintHorizontal_bias="0.743"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.91" />
+        app:layout_constraintVertical_bias="0.894" />
 
     <Button
-        android:id="@+id/buttonMessageCancel"
+        android:id="@+id/buttonDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cancel"
-        app:icon="@android:drawable/ic_menu_close_clear_cancel"
+        android:backgroundTint="#D81B60"
+        android:text="Delete"
+        app:icon="@android:drawable/ic_menu_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.272"
+        app:layout_constraintHorizontal_bias="0.756"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.909" />
+        app:layout_constraintVertical_bias="0.986" />
+
+    <Button
+        android:id="@+id/buttonEditMessageBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:icon="@drawable/abc_vector_test"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.258"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.945" />
 
     <TextView
-        android:id="@+id/textViewTapImage"
+        android:id="@+id/textViewTapImage2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="false"

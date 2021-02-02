@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.tasks.OnCompleteListener
@@ -65,6 +66,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register), View.OnClickListe
                                     db.collection("users").document(auth.uid!!).set(user).addOnSuccessListener { Log.i(TAG,"DocumentSnapshot added with ID: ${auth.uid!!}") }
                                     UIHelper.hideProgress(progressBar)
                                     FirebaseAuth.getInstance().signOut()
+                                    Toast.makeText(this.requireContext(),"Sucessfully created new account.",Toast.LENGTH_LONG).show()
                                     parentFragmentManager.beginTransaction().apply {
                                         replace(R.id.frameLayoutAuth,LoginFragment())
                                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

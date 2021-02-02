@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
@@ -50,16 +51,30 @@ class MainActivity :  AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
-        getUser(db,auth.currentUser!!.uid)
         setContentView(R.layout.activity_main)
         frameLayoutMain = findViewById(R.id.frameLayoutMain)
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewPager)
         appBarLayout = findViewById(R.id.appBarLayout)
-
         setupTabs()
         Log.i(TAG, auth.currentUser!!.uid)
-        currentUser = lastUser
+        db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
+            if (document != null) {
+                currentUser.id = document.data?.get("id") as String
+                currentUser.name = document.data?.get("name") as String
+                currentUser.pickup_range = document.data?.get("pickup_range") as Double
+                currentUser.my_messages = stringToList(document.data?.get("my_messages") as String?)
+                currentUser.kept_messages = stringToList(document.data?.get("kept_messages") as String?)
+            }
+        }
+
+        db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
+            if (document != null) {
+                Toast.makeText(this, "Welcome ${document.data?.get("name").toString()}!", Toast.LENGTH_LONG).show()
+            }
+        }
+
+
     }
 
 
