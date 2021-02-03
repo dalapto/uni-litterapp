@@ -59,7 +59,6 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         msg = (activity as MainActivity?)!!.getMessageDetails()!!
-        //getUser(db, msg.author_id!!)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
@@ -80,33 +79,34 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
-        Log.i(TAG, msg.time)
-        title.text = msg.title
-        time.text = msg.time
-        keeps.text = "Keeps "+ msg.keeps.toString()
-        viewcount.text = "Views "+(1+msg.views).toString()
-        if (msg.text == "") {
-            message.text = ""
-            imageView.visibility = View.VISIBLE
-            Log.i(TAG, "GETTING IMAGE")
-            storageReference.child("images/${msg.image}").getBytes((7L*1024*1024)).addOnSuccessListener{
-                bytes -> imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes,0,bytes.size))
-                Log.i(TAG, "SET IMAGE")
-            }
-            message.visibility = View.INVISIBLE
-        }
-        else {
-            message.text = msg.text
-            message.visibility = View.VISIBLE
-            imageView.visibility = View.INVISIBLE
-        }
-        if (msg.anonymous) {
-            author.text = "Anonymous Individual"
-        }
-        else {
-            db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document ->
-                if (document != null) {
-                    author.text = document.data?.get("name") as String
+        db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
+            if (document != null) {
+                title.text = msg.title
+                time.text = msg.time
+                keeps.text = "Keeps " + document.data?.get("keeps").toString()
+                viewcount.text = "Views " + document.data?.get("views").toString()
+                if (document.data?.get("text").toString() == "") {
+                    message.text = ""
+                    imageView.visibility = View.VISIBLE
+                    Log.i(TAG, "GETTING IMAGE")
+                    storageReference.child("images/${document.data?.get("image").toString()}").getBytes((7L * 1024 * 1024)).addOnSuccessListener { bytes ->
+                        imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size))
+                        Log.i(TAG, "SET IMAGE")
+                    }
+                    message.visibility = View.INVISIBLE
+                } else {
+                    message.text = document.data?.get("text").toString()
+                    message.visibility = View.VISIBLE
+                    imageView.visibility = View.INVISIBLE
+                }
+                if (document.data?.get("anonymous") as Boolean) {
+                    author.text = "Anonymous Individual"
+                } else {
+                    db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document2 ->
+                        if (document2 != null) {
+                            author.text = document2.data?.get("name") as String
+                        }
+                    }
                 }
             }
         }

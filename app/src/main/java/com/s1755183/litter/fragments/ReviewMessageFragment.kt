@@ -175,7 +175,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.isMyLocationEnabled = true
-        mMap.setMinZoomPreference(15.0f)
+        mMap.setMinZoomPreference(17.0f)
         getLocationPermission()
     }
 

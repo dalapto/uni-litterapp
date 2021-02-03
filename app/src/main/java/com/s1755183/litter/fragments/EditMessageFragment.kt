@@ -14,11 +14,13 @@ import android.text.Editable
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Tasks
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -50,7 +52,6 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
     private lateinit var author: TextView
     private lateinit var title: TextView
     private lateinit var message: EditText
-    private var image: Uri? = null
     private lateinit var viewPager: ViewPager
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var newMessageButton: FloatingActionButton
@@ -93,33 +94,38 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
         Log.i(TAG, msg.time)
-        title.text = msg.title
-        time.text = msg.time
-        keeps.text = "Keeps "+ msg.keeps.toString()
-        viewcount.text = "Views "+ msg.views.toString()
-        if (msg.text == "") {
-            imageView.visibility = View.VISIBLE
-            Log.i(TAG, "GETTING IMAGE")
-            storageReference.child("images/${msg.image}").getBytes((7L*1024*1024)).addOnSuccessListener{
-                bytes -> imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes,0,bytes.size))
-                Log.i(TAG, "SET IMAGE")
+        db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
+            if (document != null) {
+                title.text = msg.title
+                time.text = msg.time
+                keeps.text = "Keeps " + document.data?.get("keeps").toString()
+                viewcount.text = "Views " + document.data?.get("views").toString()
+                if (document.data?.get("text").toString() == "") {
+                    imageView.visibility = View.VISIBLE
+                    switch.isChecked = true
+                    storageReference.child("images/${document.data?.get("image").toString()}").getBytes((7L * 1024 * 1024)).addOnSuccessListener { bytes ->
+                        imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size))
+                        Log.i(TAG, "SET IMAGE")
+                    }
+                    message.visibility = View.INVISIBLE
+                } else {
+                    message.setText(document.data?.get("text").toString())
+                    message.visibility = View.VISIBLE
+                    imageView.visibility = View.INVISIBLE
+                    switch.isChecked = false
+                }
+                if (document.data?.get("anonymous") as Boolean) {
+                    author.text = "Anonymous Individual"
+                    checkBox.isChecked = true
+                } else {
+                    db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document2 ->
+                        if (document2 != null) {
+                            checkBox.isChecked = false
+                            author.text = document2.data?.get("name") as String
+                        }
+                    }
+                }
             }
-            switch.isChecked = true
-            message.visibility = View.INVISIBLE
-        }
-        else {
-            switch.isChecked = false
-            message.setText(msg.text)
-            message.visibility = View.VISIBLE
-            imageView.visibility = View.INVISIBLE
-        }
-        if (msg.anonymous) {
-            author.text = "Anonymous Individual"
-            checkBox.isChecked = true
-        }
-        else {
-            author.text = currentUser.name
-            checkBox.isChecked = false
         }
     }
 
@@ -162,8 +168,21 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 //ask for image
             }
             R.id.buttonEditMessageUpdate -> {
-                Log.i(TAG, "BACK CLICKED")
-                //(db.collection("messages").document(msg.title.toString())).update("views",(msg.views).toLong())
+                val doc = db.collection("messages").document(msg.title!!)
+                if (switch.isChecked) {
+                    val randomKey : String = UUID.randomUUID().toString()
+                    val storageRef: StorageReference = storageReference.child("images/$randomKey")
+                    storageRef.putFile(imageMessage!!).addOnSuccessListener { taskSnapshot ->
+                        doc.update("image", randomKey)
+                        doc.update("text", "")
+                    }
+                }
+                else {
+                    doc.update("image", "")
+                    doc.update("text", message.text.toString())
+                }
+                doc.update("anonymous", checkBox.isChecked)
+                Toast.makeText(this.requireContext(),"Sucessfully updated message.", Toast.LENGTH_LONG).show()
                 (activity as MainActivity?)!!.resetMessage()
                 viewPager.visibility = View.VISIBLE
                 appBarLayout.visibility = View.VISIBLE
@@ -177,19 +196,28 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 }
             }
             R.id.buttonDelete -> {
-                Log.i(TAG, "BACK CLICKED")
-                //(db.collection("messages").document(msg.title.toString())).update("views",(msg.views).toLong())
-                (activity as MainActivity?)!!.resetMessage()
-                viewPager.visibility = View.VISIBLE
-                appBarLayout.visibility = View.VISIBLE
-                newMessageButton.visibility = View.VISIBLE
-                frameLayoutMain.visibility = View.GONE
-                parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayoutMain, Fragment())
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    addToBackStack(null)
-                    commit()
+                val builder = AlertDialog.Builder(this.requireContext())
+                builder.setTitle("Delete Message")
+                builder.setMessage("Are you sure you want to delete this message?")
+                builder.setPositiveButton("Delete") { dialog, which ->
+                    (activity as MainActivity?)!!.resetMessage()
+                    viewPager.visibility = View.VISIBLE
+                    appBarLayout.visibility = View.VISIBLE
+                    newMessageButton.visibility = View.VISIBLE
+                    frameLayoutMain.visibility = View.GONE
+                    db.collection("messages").document(msg.title.toString()).delete()
+                    parentFragmentManager.beginTransaction().apply {
+                        replace(R.id.frameLayoutMain, Fragment())
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        addToBackStack(null)
+                        commit()
+                    }
+                    Toast.makeText(this.requireContext(),"Sucessfully deleted message.", Toast.LENGTH_LONG).show()
                 }
+                builder.setNegativeButton("Cancel") { _, _ -> }
+                val alertDialog: AlertDialog = builder.create()
+                alertDialog.setCancelable(false)
+                alertDialog.show()
             }
         }
     }

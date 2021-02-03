@@ -46,6 +46,8 @@ import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
+import java.util.*
+import kotlin.collections.HashMap
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
 
@@ -117,10 +119,30 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                                 }
                             }
                             for (msg in messages) {
-                                createMarker(msg.value.location, msg.key)
+                                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                                    if (!document.exists()) {
+                                        messages.remove(msg.key)
+                                        markers[markermessages.inverse()[msg.key]]!!.remove()
+                                        markers.remove(markermessages.inverse()[msg.key])
+                                        markermessages.inverse().remove(msg.key)
+                                    }
+                                    else {
+                                        createMarker(msg.value.location, msg.key)
+                                    }
+                                }
                             }
                             for (msg in our_messages) {
-                                createMarker(msg.value.location, msg.key, true)
+                                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                                    if (!document.exists()) {
+                                        our_messages.remove(msg.key)
+                                        markers[markermessages.inverse()[msg.key]]!!.remove()
+                                        markers.remove(markermessages.inverse()[msg.key])
+                                        markermessages.inverse().remove(msg.key)
+                                    }
+                                    else {
+                                        createMarker(msg.value.location, msg.key, true)
+                                    }
+                                }
                             }
                         }
                     }
