@@ -61,6 +61,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
     private lateinit var storageReference: StorageReference
     private lateinit var msg: Message
     private var imageMessage: Uri? = null
+    private var oldimage: Boolean = false
 
 
 
@@ -105,9 +106,11 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                     switch.isChecked = true
                     storageReference.child("images/${document.data?.get("image").toString()}").getBytes((7L * 1024 * 1024)).addOnSuccessListener { bytes ->
                         imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.size))
+                        oldimage = true
                         Log.i(TAG, "SET IMAGE")
                     }
                     message.visibility = View.INVISIBLE
+                    tapimage2.visibility = View.INVISIBLE
                 } else {
                     message.setText(document.data?.get("text").toString())
                     message.visibility = View.VISIBLE
@@ -140,11 +143,9 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
     }
 
     override fun onClick(v: View?) {
-
         Log.i(TAG, "CLICKED")
         when (v?.id) {
             R.id.buttonEditMessageBack -> {
-                Log.i(TAG, "BACK CLICKED")
                 (activity as MainActivity?)!!.resetMessage()
                 viewPager.visibility = View.VISIBLE
                 appBarLayout.visibility = View.VISIBLE
@@ -158,7 +159,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 }
             }
             R.id.imageViewEditMessage -> {
-                Log.i(TAG, "IMAGE VIEW CLICKED")
+
                 val intent = Intent()
                 intent.type = "image/*"
                 intent.action = Intent.ACTION_GET_CONTENT
@@ -168,31 +169,66 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 //ask for image
             }
             R.id.buttonEditMessageUpdate -> {
+                var wantupdate = false
+                var canupdate = true
+                var updatetext = false
+                var updateimage = false
                 val doc = db.collection("messages").document(msg.title!!)
-                if (switch.isChecked) {
-                    val randomKey : String = UUID.randomUUID().toString()
-                    val storageRef: StorageReference = storageReference.child("images/$randomKey")
-                    storageRef.putFile(imageMessage!!).addOnSuccessListener { taskSnapshot ->
-                        doc.update("image", randomKey)
-                        doc.update("text", "")
+                if (!switch.isChecked) {
+                    if (msg.text != message.text.toString()) {
+                        wantupdate = true
+                        updatetext = true
+                        if (message.text.toString() == "") {
+                            UIHelper.displayAlert(this.requireContext(), "Empty Message", "Please enter a message to upload.")
+                            canupdate = false
+                        }
+                    }
+                } else {
+                    if (!oldimage) {
+                        wantupdate = true
+                        if (imageMessage == null) {
+                            Log.i(TAG, "we have an empty image")
+                            canupdate = false
+                            UIHelper.displayAlert(this.requireContext(), "Empty Message", "Please enter an image to upload.")
+                        }
+                        else {
+                            updateimage = true
+                            Log.i(TAG, "we have a new image")
+                        }
+                    }
+                }
+                if (msg.anonymous != checkBox.isChecked) wantupdate = true
+                if (wantupdate) {
+                    if (canupdate) {
+                        if (updatetext) {
+                            doc.update("image", "")
+                            doc.update("text", message.text.toString())
+                        }
+                        if (updateimage) {
+                            val randomKey : String = UUID.randomUUID().toString()
+                            val storageRef: StorageReference = storageReference.child("images/$randomKey")
+                            storageRef.putFile(imageMessage!!).addOnSuccessListener { taskSnapshot ->
+                                doc.update("image", randomKey)
+                                doc.update("text", "")
+                            }
+                        }
+                        doc.update("anonymous", checkBox.isChecked)
+                        Toast.makeText(this.requireContext(),"Sucessfully updated message.", Toast.LENGTH_LONG).show()
+                        (activity as MainActivity?)!!.resetMessage()
+                        viewPager.visibility = View.VISIBLE
+                        appBarLayout.visibility = View.VISIBLE
+                        newMessageButton.visibility = View.VISIBLE
+                        frameLayoutMain.visibility = View.GONE
+                        parentFragmentManager.beginTransaction().apply {
+                            replace(R.id.frameLayoutMain, Fragment())
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            addToBackStack(null)
+                            commit()
+                        }
                     }
                 }
                 else {
-                    doc.update("image", "")
-                    doc.update("text", message.text.toString())
-                }
-                doc.update("anonymous", checkBox.isChecked)
-                Toast.makeText(this.requireContext(),"Sucessfully updated message.", Toast.LENGTH_LONG).show()
-                (activity as MainActivity?)!!.resetMessage()
-                viewPager.visibility = View.VISIBLE
-                appBarLayout.visibility = View.VISIBLE
-                newMessageButton.visibility = View.VISIBLE
-                frameLayoutMain.visibility = View.GONE
-                parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayoutMain, Fragment())
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    addToBackStack(null)
-                    commit()
+                    UIHelper.displayAlert(this.requireContext(),"Nothing to Update","Please make some changes to your message before attempting to update it.")
                 }
             }
             R.id.buttonDelete -> {
@@ -238,7 +274,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 if (isChecked) {
                     Log.i(TAG, "IMAGE CHECKED")
                     imageView.visibility = View.VISIBLE
-                    if (imageMessage == null && msg.image == "")  {
+                    if (imageMessage == null && !oldimage)  {
                         tapimage2.visibility = View.VISIBLE
                     }
                     message.visibility = View.GONE
