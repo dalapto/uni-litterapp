@@ -14,16 +14,14 @@
         android:clickable="true"
         android:contentDescription="New Message"
         android:src="@android:drawable/ic_menu_edit"
-        android:tint="#43A047"
         android:visibility="visible"
-        app:backgroundTint="#43A047"
+        app:backgroundTint="#1E88E5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.904"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.951"
-        app:rippleColor="#43A047" />
+        app:layout_constraintVertical_bias="0.951" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"

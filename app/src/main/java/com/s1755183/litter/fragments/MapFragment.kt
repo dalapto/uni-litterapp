@@ -99,9 +99,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         db.collection("messages").get().addOnSuccessListener { result ->
                             val temp = result.documents.toMutableList()
                             for (doc in temp) {
-                                val hlocation = doc.data?.get("location") as HashMap<String,Double>
-                                val location2 = LatLng(hlocation["latitude"]!!,hlocation["longitude"]!!) as LatLng
-                                if (checkDistance(location2,locationToLngLat(currentLocation),10.0)) {
+                                val hlocation = doc.data?.get("location") as HashMap<String, Double>
+                                val location2 = LatLng(hlocation["latitude"]!!, hlocation["longitude"]!!) as LatLng
+                                if (checkDistance(location2, locationToLngLat(currentLocation), 10.0)) {
                                     val title = doc.data?.get("title") as String
                                     val author = doc.data?.get("author_id") as String
                                     val image = doc.data?.get("image") as String
@@ -110,10 +110,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                                     val views = (doc.data?.get("views") as Long).toInt()
                                     val keeps = (doc.data?.get("keeps") as Long).toInt()
                                     val anonymous = doc.data?.get("anonymous") as Boolean
-                                    if (author== currentUser.id) {
+                                    if (author == currentUser.id) {
                                         our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
-                                    }
-                                    else {
+                                    } else {
                                         messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
                                     }
                                 }
@@ -125,9 +124,25 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                                         markers[markermessages.inverse()[msg.key]]!!.remove()
                                         markers.remove(markermessages.inverse()[msg.key])
                                         markermessages.inverse().remove(msg.key)
-                                    }
-                                    else {
-                                        createMarker(msg.value.location, msg.key)
+                                    } else {
+                                        db.collection("users").document(currentUser.id).collection("seenmessages").whereEqualTo("title", msg.key).get()
+                                                .addOnSuccessListener { documents ->
+                                                    if (!documents.isEmpty) {
+                                                        for (doc in documents) {
+                                                            if (doc.data["kept"] as Boolean) {
+                                                                createMarker(msg.value.location, msg.key, author=false, kept=true)
+                                                            } else {
+                                                                if (doc.data["seen"] as Boolean) {
+                                                                    createMarker(msg.value.location, msg.key)
+                                                                } else {
+                                                                    createMarker(msg.value.location, msg.key, author = false, partial=true)
+                                                                }
+                                                            }
+                                                        }
+                                                    } else {
+                                                        createMarker(msg.value.location, msg.key, author=false, kept=false, partial=false)
+                                                    }
+                                                }
                                     }
                                 }
                             }
@@ -138,8 +153,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                                         markers[markermessages.inverse()[msg.key]]!!.remove()
                                         markers.remove(markermessages.inverse()[msg.key])
                                         markermessages.inverse().remove(msg.key)
-                                    }
-                                    else {
+                                    } else {
                                         createMarker(msg.value.location, msg.key, true)
                                     }
                                 }
@@ -147,10 +161,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         }
                     }
                 }
-
             }
         }
-
     }
 
     override fun onResume() {
@@ -253,19 +265,29 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
 
 
 
-    private fun createMarker(position: LatLng, title: String = "New Marker", author: Boolean = false) {
+    private fun createMarker(position: LatLng, title: String = "New Marker", author: Boolean = false, kept: Boolean = false, partial: Boolean = false) {
+        var title2 = title
         if (markermessages.containsValue(title)) {
             markers[markermessages.inverse()[title]]!!.position = position
         }
         else {
-            val mIconGenerator: IconGenerator = IconGenerator(this.requireContext())
+            val mIconGenerator = IconGenerator(this.requireContext())
             if (author) {
                 mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+            } else {
+                if (kept) {
+                    mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+                }
+                else {
+                    mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+                    title2 = if (partial) {
+                        ("?".repeat(title.length/2)+title.drop(title.length/2))
+                    } else {
+                        ("?".repeat(title.length))
+                    }
+                }
             }
-            else {
-                mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
-            }
-            val iconBitmap: Bitmap = mIconGenerator.makeIcon(title)
+            val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
             val marker = mMap.addMarker(
                     MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
             )

@@ -66,6 +66,15 @@ data class Message(
     }
 
 
+data class MessageState(
+        var title: String,
+        var seen: Boolean = false, //fully seen = true, partially seen = false, lack of entry indicates unseen/new
+        var kept: Boolean = false,
+        var timesviewed: Int = 0, //max is displayed in settings as "Other messages: Most Looked at"
+        var timescommented: Int = 0 //max is displayed in settings as "Other messgaes: Most commented on"
+)
+
+
 data class Comment(
         val message_id: String? = null,
         val id: String? = null,
