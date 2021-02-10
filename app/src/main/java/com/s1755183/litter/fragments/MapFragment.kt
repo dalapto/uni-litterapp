@@ -31,10 +31,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -42,11 +39,13 @@ import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.maps.android.ktx.model.circleOptions
 import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
@@ -66,11 +65,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private var messages : HashMap<String, Message> = HashMap<String, Message>()
     private var our_messages : HashMap<String, Message> = HashMap<String, Message>()
     private var markermessages : HashBiMap<String, String> = HashBiMap.create()
+    private var seenmessages : HashMap<String, Int> = HashMap<String, Int>()
+    private var keptmessages : ArrayList<String> = ArrayList<String>()
     private lateinit var frameLayoutMain: FrameLayout
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var viewPager: ViewPager
     private lateinit var newMessageButton: FloatingActionButton
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private var closeCirc : Circle? = null
+    private var farCirc : Circle? = null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,71 +98,95 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         }
                         currentLocation = location
                         lastLocation = location
+                        updateCircles()
+                        updateMarkers()
+                        checkProximity()
                         //mMap.setMinZoomPreference(15.0f)
-                        db.collection("messages").get().addOnSuccessListener { result ->
-                            val temp = result.documents.toMutableList()
-                            for (doc in temp) {
-                                val hlocation = doc.data?.get("location") as HashMap<String, Double>
-                                val location2 = LatLng(hlocation["latitude"]!!, hlocation["longitude"]!!) as LatLng
-                                if (checkDistance(location2, locationToLngLat(currentLocation), 10.0)) {
-                                    val title = doc.data?.get("title") as String
-                                    val author = doc.data?.get("author_id") as String
-                                    val image = doc.data?.get("image") as String
-                                    val text = doc.data?.get("text") as String
-                                    val time = doc.data?.get("time").toString()
-                                    val views = (doc.data?.get("views") as Long).toInt()
-                                    val keeps = (doc.data?.get("keeps") as Long).toInt()
-                                    val anonymous = doc.data?.get("anonymous") as Boolean
-                                    if (author == currentUser.id) {
-                                        our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
-                                    } else {
-                                        messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
-                                    }
-                                }
-                            }
-                            for (msg in messages) {
-                                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
-                                    if (!document.exists()) {
-                                        messages.remove(msg.key)
-                                        markers[markermessages.inverse()[msg.key]]!!.remove()
-                                        markers.remove(markermessages.inverse()[msg.key])
-                                        markermessages.inverse().remove(msg.key)
-                                    } else {
-                                        db.collection("users").document(currentUser.id).collection("seenmessages").whereEqualTo("title", msg.key).get()
-                                                .addOnSuccessListener { documents ->
-                                                    if (!documents.isEmpty) {
-                                                        for (doc in documents) {
-                                                            if (doc.data["kept"] as Boolean) {
-                                                                createMarker(msg.value.location, msg.key, author=false, kept=true)
-                                                            } else {
-                                                                if (doc.data["seen"] as Boolean) {
-                                                                    createMarker(msg.value.location, msg.key)
-                                                                } else {
-                                                                    createMarker(msg.value.location, msg.key, author = false, partial=true)
-                                                                }
-                                                            }
-                                                        }
-                                                    } else {
-                                                        createMarker(msg.value.location, msg.key, author=false, kept=false, partial=false)
-                                                    }
-                                                }
-                                    }
-                                }
-                            }
-                            for (msg in our_messages) {
-                                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
-                                    if (!document.exists()) {
-                                        our_messages.remove(msg.key)
-                                        markers[markermessages.inverse()[msg.key]]!!.remove()
-                                        markers.remove(markermessages.inverse()[msg.key])
-                                        markermessages.inverse().remove(msg.key)
-                                    } else {
-                                        createMarker(msg.value.location, msg.key, true)
-                                    }
-                                }
-                            }
-                        }
                     }
+                }
+            }
+        }
+    }
+
+    private fun updateMarkers() {
+        db.collection("messages").get().addOnSuccessListener { result ->
+            val temp = result.documents.toMutableList()
+            for (doc in temp) {
+                val hlocation = doc.data?.get("location") as HashMap<String, Double>
+                val location2 = LatLng(hlocation["latitude"]!!, hlocation["longitude"]!!) as LatLng
+                if (checkDistance(location2, locationToLngLat(currentLocation), 10.0)) {
+                    val title = doc.data?.get("title") as String
+                    val author = doc.data?.get("author_id") as String
+                    val image = doc.data?.get("image") as String
+                    val text = doc.data?.get("text") as String
+                    val time = doc.data?.get("time").toString()
+                    val views = (doc.data?.get("views") as Long).toInt()
+                    val keeps = (doc.data?.get("keeps") as Long).toInt()
+                    val anonymous = doc.data?.get("anonymous") as Boolean
+                    if (author == currentUser.id) {
+                        our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                    } else {
+                        messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous)
+                    }
+                }
+            }
+            for (msg in messages) {
+                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                        messages.remove(msg.key)
+                        markers[markermessages.inverse()[msg.key]]!!.remove()
+                        markers.remove(markermessages.inverse()[msg.key])
+                        markermessages.inverse().remove(msg.key)
+                    } else {
+                        db.collection("users").document(currentUser.id).collection("seenmessages").whereEqualTo("title", msg.key).get()
+                                .addOnSuccessListener { documents ->
+                                    if (!documents.isEmpty) {
+                                        for (doc in documents) {
+                                            if (doc.data["kept"] as Boolean) {
+                                                createMarker(msg.value.location, msg.key, kept=true, seen=2)
+                                            } else {
+                                                if (doc.data["seen"] as Boolean) {
+                                                    createMarker(msg.value.location, msg.key, seen=2)
+                                                } else {
+                                                    createMarker(msg.value.location, msg.key, seen=1)
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        createMarker(msg.value.location, msg.key, seen=0)
+                                    }
+                                }
+                    }
+                }
+            }
+            for (msg in our_messages) {
+                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                        our_messages.remove(msg.key)
+                        markers[markermessages.inverse()[msg.key]]!!.remove()
+                        markers.remove(markermessages.inverse()[msg.key])
+                        markermessages.inverse().remove(msg.key)
+                    } else {
+                        createMarker(msg.value.location, msg.key, author=true, seen=2)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateCircles() {
+        closeCirc?.remove()
+        farCirc?.remove()
+        closeCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(175.0).fillColor(Color.parseColor("#3271cce7")).strokeColor(Color.parseColor("#1071cce7")))
+        farCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(500.0).fillColor(Color.parseColor("#287198e7")).strokeColor(Color.parseColor("#087198e7")))
+    }
+    private fun checkProximity() {
+        for (msg in seenmessages) {
+            if (msg.value < 2) {
+                if (checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.0045)) {
+                    val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.00245)
+                    val messagestate = MessageState(title = msg.key, seen = proximity)
+                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.key).set(messagestate)
                 }
             }
         }
@@ -175,8 +202,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
 
     private fun createLocationRequest() {
         locationRequest = LocationRequest.create().apply {
-            interval = 10000
-            fastestInterval = 5000
+            interval = 5000
+            fastestInterval = 2000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         val builder = LocationSettingsRequest.Builder()
@@ -231,29 +258,35 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         mMap.isMyLocationEnabled = true
         mMap.setOnMarkerClickListener { marker ->
             Log.i(TAG, "MARKER CLICKED")
-            //val message = markermessages[marker.id]
-            // marker = markermessages.inverse()[message.title]
-            viewPager.visibility = View.GONE
-            appBarLayout.visibility = View.GONE
-            newMessageButton.visibility = View.GONE
-            frameLayoutMain.visibility = View.VISIBLE
-
-            if (messages[markermessages[marker.id]] != null) {
-                (activity as MainActivity?)!!.saveMessage(messages[markermessages[marker.id]]!!)
-                parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayoutMain,ViewMessageFragment())
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    addToBackStack(null)
-                    commit()
-                }
+            if (seenmessages[markermessages[marker.id]]!! < 2) {
+                Log.i(TAG, "Not seen!")
+                marker.title ="Too far away to read this..."
+                marker.showInfoWindow()
             }
             else {
-                (activity as MainActivity?)!!.saveMessage(our_messages[markermessages[marker.id]]!!)
-                parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayoutMain,EditMessageFragment())
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    addToBackStack(null)
-                    commit()
+                viewPager.visibility = View.GONE
+                appBarLayout.visibility = View.GONE
+                newMessageButton.visibility = View.GONE
+                frameLayoutMain.visibility = View.VISIBLE
+                if (messages[markermessages[marker.id]] != null) {
+                    Log.i(TAG, "Seen!")
+                    (activity as MainActivity?)!!.saveMessage(messages[markermessages[marker.id]]!!)
+                    parentFragmentManager.beginTransaction().apply {
+                        replace(R.id.frameLayoutMain,ViewMessageFragment())
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        addToBackStack(null)
+                        commit()
+                    }
+                }
+                else {
+                    Log.i(TAG, "Mine!")
+                    (activity as MainActivity?)!!.saveMessage(our_messages[markermessages[marker.id]]!!)
+                    parentFragmentManager.beginTransaction().apply {
+                        replace(R.id.frameLayoutMain,EditMessageFragment())
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        addToBackStack(null)
+                        commit()
+                    }
                 }
             }
             true
@@ -265,37 +298,35 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
 
 
 
-    private fun createMarker(position: LatLng, title: String = "New Marker", author: Boolean = false, kept: Boolean = false, partial: Boolean = false) {
+    private fun createMarker(position: LatLng, title: String = "New Marker", author: Boolean = false, kept: Boolean = false, seen: Int = 0) {
         var title2 = title
         if (markermessages.containsValue(title)) {
-            markers[markermessages.inverse()[title]]!!.position = position
+            markers[markermessages.inverse()[title]]?.remove()
+            markermessages.inverse().remove(title)
         }
-        else {
-            val mIconGenerator = IconGenerator(this.requireContext())
-            if (author) {
-                mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
-            } else {
-                if (kept) {
-                    mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
-                }
-                else {
-                    mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
-                    title2 = if (partial) {
-                        ("?".repeat(title.length/2)+title.drop(title.length/2))
-                    } else {
-                        ("?".repeat(title.length))
-                    }
+        val mIconGenerator = IconGenerator(this.requireContext())
+        if (author) {
+            mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+        } else {
+            if (kept) {
+                mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            }
+            else {
+                mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+                title2 = when (seen) {
+                0 -> "?".repeat(title.length)
+                1 -> "?".repeat(title.length/2)+title.drop(title.length/2)
+                    else -> title
                 }
             }
-            val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
-            val marker = mMap.addMarker(
-                    MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap))
-            )
-            markers[marker.id] = marker
-            Log.i(TAG,marker.id)
-            Log.i(TAG,title)
-            markermessages[marker.id] = title
         }
+        val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
+        val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+        markers[marker.id] = marker
+        Log.i(TAG,marker.id)
+        Log.i(TAG,title)
+        markermessages[marker.id] = title
+        seenmessages[title] = seen
     }
 
     private fun locationToLngLat(location: Location): LatLng {
