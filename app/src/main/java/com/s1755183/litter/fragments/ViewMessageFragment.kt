@@ -14,6 +14,8 @@ import android.widget.*
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Tasks
@@ -26,8 +28,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.s1755183.litter.*
 import com.s1755183.litter.R
+import com.s1755183.litter.fragments.adapters.CommentAdapter
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -44,6 +48,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private lateinit var author: TextView
     private lateinit var title: TextView
     private lateinit var message: TextView
+    private lateinit var commentsButton: Button
     private var image: Uri? = null
     private lateinit var viewPager: ViewPager
     private lateinit var appBarLayout: AppBarLayout
@@ -53,12 +58,29 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private lateinit var storage: FirebaseStorage
     private lateinit var storageReference: StorageReference
     private lateinit var msg: Message
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private var comments_list: ArrayList<Comment> = ArrayList<Comment>()
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         msg = (activity as MainActivity?)!!.getMessageDetails()!!
+        commentsButton = view.findViewById(R.id.buttonViewComments)
+        commentsButton.setOnClickListener(this)
+        db.collection("messages").document(msg.title!!).collection("comments").get().addOnSuccessListener { documents ->
+            Log.i(TAG,"FOUND DOCUMENTS")
+            for (doc in documents.documents) {
+                val comment_author = doc.data?.get("author_id").toString()
+                val comment_time = doc.data?.get("time").toString()
+                val comment_text = doc.data?.get("text").toString()
+                Log.i(TAG,comments_list.size.toString())
+                comments_list.add(Comment(null,msg.title!!,comment_author,comment_time,comment_text))
+            }
+            commentsButton.text = " " + comments_list.size.toString() + " Comments"
+        }
+        switch = view.findViewById(R.id.switchKeep)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
@@ -79,6 +101,9 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
+
+
+
         db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 title.text = msg.title
@@ -127,6 +152,14 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                 frameLayoutMain.visibility = View.GONE
                 parentFragmentManager.beginTransaction().apply {
                     replace(R.id.frameLayoutMain, Fragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    addToBackStack(null)
+                    commit()
+                }
+            }
+            R.id.buttonViewComments -> {
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain, CommentsFragment())
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     addToBackStack(null)
                     commit()

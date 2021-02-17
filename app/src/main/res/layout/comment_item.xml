@@ -1,0 +1,39 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="#017E7D"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/textViewCommentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/textViewCommentText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text=""
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textViewCommentAuthor"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

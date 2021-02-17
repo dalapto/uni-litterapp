@@ -8,6 +8,23 @@
     android:background="#E91E88E5"
     tools:context=".fragments.NewMessageFragment">
 
+    <Button
+        android:id="@+id/buttonViewComments2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#00897B"
+        android:text="  0 Comments"
+        android:textColor="#FFFFFF"
+        app:icon="@android:drawable/stat_notify_chat"
+        app:iconPadding="0dp"
+        app:iconSize="36dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.949" />
+
     <TextView
         android:id="@+id/textViewEditKeeps"
         android:layout_width="wrap_content"
@@ -69,7 +86,6 @@
         android:gravity="center"
         android:imeOptions="actionDone"
         android:inputType="textPersonName"
-        android:text="TITLE"
         android:textAlignment="center"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -83,7 +99,6 @@
         android:id="@+id/textViewEditMessageAuthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="From Author"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,7 +111,6 @@
         android:id="@+id/textViewEditMessageTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TIME"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

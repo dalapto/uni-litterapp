@@ -41,6 +41,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
     private lateinit var backButton: Button
     private lateinit var updateButton: Button
     private lateinit var deleteButton: Button
+    private lateinit var commentsButton: Button
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switch: Switch
     private lateinit var checkBox: CheckBox
@@ -71,6 +72,8 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
+        commentsButton = view.findViewById(R.id.buttonViewComments2)
+        commentsButton.setOnClickListener(this)
         backButton = view.findViewById(R.id.buttonEditMessageBack)
         backButton.setOnClickListener(this)
         updateButton = view.findViewById(R.id.buttonEditMessageUpdate)
@@ -145,6 +148,14 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
     override fun onClick(v: View?) {
         Log.i(TAG, "CLICKED")
         when (v?.id) {
+            R.id.buttonViewComments2 -> {
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayoutMain, CommentsFragment())
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    addToBackStack(null)
+                    commit()
+                }
+            }
             R.id.buttonEditMessageBack -> {
                 (activity as MainActivity?)!!.resetMessage()
                 viewPager.visibility = View.VISIBLE
