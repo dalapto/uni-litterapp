@@ -50,13 +50,11 @@ import kotlin.collections.HashMap
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
 
-    private val DEFAULT_ZOOM = 15.0f
     private lateinit var mMap: GoogleMap
     private lateinit var currentLocation: Location
     private var lastLocation: Location? = null
     private lateinit var locationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val defaultLocation = LatLng(-55.9431, -3.2010)
     private var locationPermissionGranted: Boolean = false
     private val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
     private lateinit var locationCallback: LocationCallback
@@ -95,6 +93,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         if (lastLocation == null) {
                             zoomTo(location, 15.0f)
                         }
+                        currentUser.location = locationToLngLat(location)
                         currentLocation = location
                         lastLocation = location
                         updateCircles()
@@ -173,6 +172,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             }
         }
     }
+
 
     private fun updateCircles() {
         closeCirc?.remove()
@@ -320,9 +320,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         messages_states[title] = state
     }
 
-    private fun locationToLngLat(location: Location): LatLng {
-        return LatLng(location.latitude, location.longitude)
-    }
+
 
 
     private fun getLocationPermission() {

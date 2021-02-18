@@ -11,10 +11,9 @@ class MessageHolder(v: View): RecyclerView.ViewHolder(v) {
     val time: TextView = v.findViewById(R.id.textViewMitemTime)
     val author: TextView = v.findViewById(R.id.textViewMitemAuthor)
     val title: TextView = v.findViewById(R.id.textViewMitemTitle)
-    val map: MapView = v.findViewById(R.id.mapViewMitem)
     val comments: TextView = v.findViewById(R.id.textViewMitemComments)
     val keeps: TextView = v.findViewById(R.id.textViewMitemKeeps)
     val views: TextView = v.findViewById(R.id.textViewMitemViews)
+    val map: MapView = v.findViewById(R.id.mapViewMitem)
     val card: CardView = v.findViewById(R.id.messageCardView)
-
 }

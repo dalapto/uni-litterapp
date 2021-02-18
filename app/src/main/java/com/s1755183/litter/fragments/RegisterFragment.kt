@@ -9,6 +9,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -62,7 +63,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register), View.OnClickListe
                             auth.createUserWithEmailAndPassword(email2, password2).addOnCompleteListener(this.requireActivity(), OnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Log.i(TAG, "sucessful register")
-                                    val user = User(auth.uid!!, username)
+                                    val user = User(auth.uid!!, username, LatLng(7.7,7.7))
                                     db.collection("users").document(auth.uid!!).set(user).addOnSuccessListener { Log.i(TAG,"DocumentSnapshot added with ID: ${auth.uid!!}") }
                                     UIHelper.hideProgress(progressBar)
                                     FirebaseAuth.getInstance().signOut()

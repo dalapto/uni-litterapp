@@ -28,9 +28,6 @@ class MainActivity :  AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     lateinit var tabLayout: TabLayout
-    lateinit var mapsTab : TabItem
-    lateinit var messagesTab : TabItem
-    lateinit var logoutTab : TabItem
     lateinit var viewPager: ViewPager
     lateinit var frameLayoutMain: FrameLayout
     lateinit var appBarLayout: AppBarLayout
@@ -62,6 +59,7 @@ class MainActivity :  AppCompatActivity() {
             if (document != null) {
                 currentUser.id = document.data?.get("id") as String
                 currentUser.name = document.data?.get("name") as String
+                currentUser.location
             }
         }
 

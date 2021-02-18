@@ -25,7 +25,6 @@ class CommentAdapter(private val comments: ArrayList<Comment>, private val mList
         if (item.author_name == currentUser.name) {
             holder.deletebutton.visibility = View.VISIBLE
             holder.deletebutton.setOnClickListener{view -> mListener.onViewClicked(view.id, holder.adapterPosition, comments[position].id.toString())}
-
         }
         else {
             holder.deletebutton.visibility = View.INVISIBLE

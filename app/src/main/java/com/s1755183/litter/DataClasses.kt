@@ -1,19 +1,25 @@
 package com.s1755183.litter
 
+import android.location.Location
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-var currentUser: User = User("","")
+var currentUser: User = User("","",LatLng(0.0,0.0))
 
 fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
     return sqrt((messageLoc.latitude - currentLoc.latitude).pow(2) + (messageLoc.longitude - currentLoc.longitude).pow(2)) <= maxDistance
 }
 
+fun locationToLngLat(location: Location): LatLng {
+    return LatLng(location.latitude, location.longitude)
+}
+
 data class User(
-        var id: String = "",
-        var name: String = ""
+        var id: String,
+        var name: String,
+        var location: LatLng
     )
 
 data class Message(
