@@ -1,0 +1,93 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/messageCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="#43A047"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/textViewMitemTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+
+                android:backgroundTint="#94FFFFFF"
+                android:paddingTop="0dp"
+                android:text="time" />
+
+            <TextView
+                android:id="@+id/textViewMitemTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMitemViews"
+                android:layout_centerInParent="true"
+                android:padding="12dp"
+                android:text="title"
+                android:textSize="18sp" />
+
+
+            <TextView
+                android:id="@+id/textViewMitemAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMitemTime"
+                android:paddingTop="4dp"
+                android:text="author" />
+
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/mapViewMitem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMitemTitle"
+                android:layout_centerInParent="true" />
+
+            <TextView
+                android:id="@+id/textViewMitemComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingTop="4dp"
+                android:text="Comments: 0" />
+
+            <TextView
+                android:id="@+id/textViewMitemKeeps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMitemComments"
+                android:layout_alignParentRight="true"
+                android:paddingTop="4dp"
+                android:text="Keeps: 0" />
+
+            <TextView
+                android:id="@+id/textViewMitemViews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewMitemKeeps"
+                android:layout_alignParentRight="true"
+                android:paddingTop="4dp"
+                android:text="Views: 0" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

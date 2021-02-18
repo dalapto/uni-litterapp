@@ -74,14 +74,6 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
         storageReference = storage.reference
         commentsButton = view.findViewById(R.id.buttonViewComments2)
         commentsButton.setOnClickListener(this)
-        var comment_count = 0
-        db.collection("messages").document(msg.title!!).collection("comments").get().addOnSuccessListener { documents ->
-            Log.i(TAG,"FOUND DOCUMENTS")
-            for (doc in documents.documents) {
-                comment_count += 1
-            }
-            commentsButton.text = " " + comment_count.toString() + " Comments"
-        }
         backButton = view.findViewById(R.id.buttonEditMessageBack)
         backButton.setOnClickListener(this)
         updateButton = view.findViewById(R.id.buttonEditMessageUpdate)
@@ -112,6 +104,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                 time.text = msg.time
                 keeps.text = "Keeps " + document.data?.get("keeps").toString()
                 viewcount.text = "Views " + document.data?.get("views").toString()
+                commentsButton.text = " " + document.data?.get("comments").toString() + " Comments"
                 if (document.data?.get("text").toString() == "") {
                     imageView.visibility = View.VISIBLE
                     switch.isChecked = true

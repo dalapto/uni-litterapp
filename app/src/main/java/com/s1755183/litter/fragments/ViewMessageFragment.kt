@@ -65,21 +65,9 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         msg = (activity as MainActivity?)!!.getMessageDetails()!!
         commentsButton = view.findViewById(R.id.buttonViewComments)
         commentsButton.setOnClickListener(this)
-        db.collection("messages").document(msg.title!!).collection("comments").get().addOnSuccessListener { documents ->
-            Log.i(TAG,"FOUND DOCUMENTS")
-            for (doc in documents.documents) {
-                val comment_author = doc.data?.get("author_id").toString()
-                val comment_time = doc.data?.get("time").toString()
-                val comment_text = doc.data?.get("text").toString()
-                Log.i(TAG,comments_list.size.toString())
-                comments_list.add(Comment(msg.title!!,author_name = comment_author,time = comment_time,text = comment_text))
-            }
-            commentsButton.text = " " + comments_list.size.toString() + " Comments"
-        }
         switch = view.findViewById(R.id.switchKeep)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
@@ -101,15 +89,13 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
-
-
-
         db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 title.text = msg.title
                 time.text = msg.time
                 keeps.text = "Keeps " + document.data?.get("keeps").toString()
                 viewcount.text = "Views " + document.data?.get("views").toString()
+                commentsButton.text = " " + document.data?.get("comments").toString() + " Comments"
                 if (document.data?.get("text").toString() == "") {
                     message.text = ""
                     imageView.visibility = View.VISIBLE

@@ -3,15 +3,11 @@ package com.s1755183.litter.fragments.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.s1755183.litter.Comment
-import com.s1755183.litter.CommentHolder
 import com.s1755183.litter.R
 import com.s1755183.litter.currentUser
 
-//private val comments =  ArrayList<Comment>()
-//private lateinit var mListener : AdapterView.OnItemClickListener
 
 class CommentAdapter(private val comments: ArrayList<Comment>, private val mListener : RecyclerViewActionListener ): RecyclerView.Adapter<CommentHolder>() {
     override fun getItemCount() = comments.size

@@ -62,9 +62,6 @@ class MainActivity :  AppCompatActivity() {
             if (document != null) {
                 currentUser.id = document.data?.get("id") as String
                 currentUser.name = document.data?.get("name") as String
-                currentUser.pickup_range = document.data?.get("pickup_range") as Double
-                currentUser.my_messages = stringToList(document.data?.get("my_messages") as String?)
-                currentUser.kept_messages = stringToList(document.data?.get("kept_messages") as String?)
             }
         }
 
@@ -83,12 +80,25 @@ class MainActivity :  AppCompatActivity() {
     private var imageuri : Uri? = null
 
     fun saveMessageDetails(title: String, text: String?, anonymous: Boolean, image: String?) {
-        newmessage = Message(title =title, text = text, anonymous = anonymous, image = image)
+        newmessage = Message(title = title, text = text, anonymous = anonymous, image = image)
     }
 
     fun saveMessage(msg: Message) {
         newmessage = msg
     }
+
+    fun incrementComments() {
+        newmessage?.comments = newmessage?.comments?.plus(1)!!
+    }
+
+    fun incrementKeeps() {
+        newmessage?.keeps = newmessage?.keeps?.plus(1)!!
+    }
+
+    fun incrementViews() {
+        newmessage?.keeps = newmessage?.keeps?.plus(1)!!
+    }
+
 
     fun getMessageDetails() : Message? {
         return newmessage

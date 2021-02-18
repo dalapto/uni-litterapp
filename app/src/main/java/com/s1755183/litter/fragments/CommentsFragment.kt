@@ -38,6 +38,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         comments_recycler = view.findViewById(R.id.commentsView)
+        comments_recycler.setOnClickListener(this)
         auth = FirebaseAuth.getInstance()
         backButton = view.findViewById(R.id.buttonBackComment)
         backButton.setOnClickListener(this)
@@ -82,6 +83,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                 builder.setMessage("Are you sure you want to delete this comment?")
                 builder.setPositiveButton("Delete") { dialog, which ->
                     db.collection("messages").document(msg.title.toString()).collection("comments").document(commentID).delete()
+                    db.collection("messages").document(msg.title!!).update("comments", msg.comments-1)
                     comments_list.removeAt(clickedItemPosition)
                     comments_recycler.adapter?.notifyItemRemoved(clickedItemPosition)
                     Toast.makeText(this.requireContext(),"Sucessfully deleted comment.", Toast.LENGTH_LONG).show()
@@ -119,15 +121,20 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                     val randomKey: String = UUID.randomUUID().toString()
                     val comment = Comment(id= randomKey, author_id = currentUser.id, author_name = currentUser.name, text = comment_text, time = Timestamp.now().toDate().toString())
                     db.collection("messages").document(msg.title!!).collection("comments").document(randomKey).set(comment)
+                    db.collection("messages").document(msg.title!!).update("comments", msg.comments+1)
+                    (activity as MainActivity?)!!.incrementComments()
                     Toast.makeText(this.requireContext(), "Sucessfully commented on message.", Toast.LENGTH_LONG).show()
                     commentText.setText("")
                 }
                 hideKeyboardFrom(this.requireContext())
             }
+            else -> {
+                hideKeyboardFrom(this.requireContext())
+            }
         }
     }
 
-    fun hideKeyboardFrom(context: Context) {
+    private fun hideKeyboardFrom(context: Context) {
         val view = getView()?.getRootView()?.getWindowToken()
         val imm: InputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view, 0)
