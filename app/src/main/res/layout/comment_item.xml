@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:background="#FFFFFF"
     app:cardBackgroundColor="#017E7D"
     app:cardCornerRadius="6dp"
     app:cardElevation="6dp">
@@ -15,24 +16,55 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <TextView
-            android:id="@+id/textViewCommentTime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textViewCommentText"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text=""
-            android:textSize="18sp" />
+            <ImageButton
+                android:id="@+id/deleteCommentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:backgroundTint="#E53935"
+                android:padding="8dp"
+                android:paddingTop="4dp"
+                app:srcCompat="@android:drawable/ic_menu_delete" />
 
-        <TextView
-            android:id="@+id/textViewCommentAuthor"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="" />
+            <TextView
+                android:id="@+id/textViewCommentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+
+                android:backgroundTint="#94FFFFFF"
+                android:paddingTop="0dp"
+                android:text="time" />
+
+            <TextView
+                android:id="@+id/textViewCommentText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/deleteCommentButton"
+
+                android:text="text"
+                android:padding="12dp"
+                android:textSize="18sp" />
+
+
+            <TextView
+                android:id="@+id/textViewCommentAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_below="@id/textViewCommentText"
+                android:paddingTop="4dp"
+                android:text="author" />
+
+
+        </RelativeLayout>
 
     </LinearLayout>
 

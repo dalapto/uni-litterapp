@@ -74,6 +74,14 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
         storageReference = storage.reference
         commentsButton = view.findViewById(R.id.buttonViewComments2)
         commentsButton.setOnClickListener(this)
+        var comment_count = 0
+        db.collection("messages").document(msg.title!!).collection("comments").get().addOnSuccessListener { documents ->
+            Log.i(TAG,"FOUND DOCUMENTS")
+            for (doc in documents.documents) {
+                comment_count += 1
+            }
+            commentsButton.text = " " + comment_count.toString() + " Comments"
+        }
         backButton = view.findViewById(R.id.buttonEditMessageBack)
         backButton.setOnClickListener(this)
         updateButton = view.findViewById(R.id.buttonEditMessageUpdate)

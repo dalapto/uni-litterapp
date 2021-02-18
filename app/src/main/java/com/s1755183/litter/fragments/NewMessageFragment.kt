@@ -124,7 +124,7 @@ class NewMessageFragment : Fragment(R.layout.fragment_new_message), View.OnClick
                     UIHelper.displayAlert(this.requireContext(),"Empty Message","Please enter a Title for your message.")
                 }
                 else {
-                    db.collection("messages").document(titleText.toLowerCase(Locale.ROOT)).get().addOnSuccessListener { document ->
+                    db.collection("messages").document(titleText).get().addOnSuccessListener { document ->
                         if (!document.exists()) {
                             var imagetext = ""
                             Log.i(TAG,(switch.isChecked).toString())

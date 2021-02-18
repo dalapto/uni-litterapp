@@ -106,6 +106,10 @@ class MainActivity :  AppCompatActivity() {
         return imageuri
     }
 
+    fun deleteComment() {
+
+    }
+
 
 }
 

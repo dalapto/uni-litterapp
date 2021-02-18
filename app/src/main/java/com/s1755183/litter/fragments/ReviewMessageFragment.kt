@@ -274,13 +274,13 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                 if (messagetext == "") {
                     storageRef.putFile(image!!).addOnSuccessListener { taskSnapshot ->
                         val downloadUrl = taskSnapshot.task.snapshot.storage.downloadUrl.toString()
-                        val message = Message(image = randomKey, text = "", title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
-                        db.collection("messages").document(titletext.toLowerCase(Locale.ROOT)).set(message)
+                        val message = Message(image = randomKey, text = "", title = titletext, location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
+                        db.collection("messages").document(titletext).set(message)
                     }
                 }
                 else {
-                    val message = Message(image = "", text = messagetext, title = titletext.toLowerCase(Locale.ROOT), location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
-                    db.collection("messages").document(titletext.toLowerCase(Locale.ROOT)).set(message)
+                    val message = Message(image = "", text = messagetext, title = titletext, location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
+                    db.collection("messages").document(titletext).set(message)
                 }
                 Toast.makeText(this.requireContext(),"Sucessfully created new message.", Toast.LENGTH_LONG).show()
                 parentFragmentManager.beginTransaction().apply {

@@ -76,7 +76,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                 val comment_time = doc.data?.get("time").toString()
                 val comment_text = doc.data?.get("text").toString()
                 Log.i(TAG,comments_list.size.toString())
-                comments_list.add(Comment(null,msg.title!!,comment_author,comment_time,comment_text))
+                comments_list.add(Comment(msg.title!!,author_name = comment_author,time = comment_time,text = comment_text))
             }
             commentsButton.text = " " + comments_list.size.toString() + " Comments"
         }

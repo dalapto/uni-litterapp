@@ -21,10 +21,10 @@
         app:icon="@drawable/abc_vector_test"
         app:layout_constraintBottom_toTopOf="@+id/guideline16"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.947"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.274" />
+        app:layout_constraintVertical_bias="0.283" />
 
     <EditText
         android:id="@+id/editTextNewComment"
@@ -35,11 +35,13 @@
         android:hint="Make a comment...."
         android:imeOptions="actionDone"
         android:includeFontPadding="false"
-        android:inputType="textPersonName"
+        android:inputType="textImeMultiLine|textMultiLine"
+        android:maxLength="100"
+        android:maxLines="5"
         android:padding="12dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline16"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.228"
+        app:layout_constraintHorizontal_bias="0.154"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.939" />
@@ -49,15 +51,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#008898"
-        android:text="Comment"
+        android:text=" Comment"
         app:icon="@android:drawable/sym_action_chat"
         app:iconPadding="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.947"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.151" />
+        app:layout_constraintVertical_bias="0.15" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/commentsView"

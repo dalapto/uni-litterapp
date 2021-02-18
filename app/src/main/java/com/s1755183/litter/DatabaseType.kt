@@ -77,8 +77,8 @@ data class MessageState(
 
 data class Comment(
         val id: String? = null,
-        val message_id: String? = null,
         val author_id: String? = null,
-        val date: String? = null,
+        val author_name: String? = null,
+        val time: String? = null,
         val text: String? = null
     )
