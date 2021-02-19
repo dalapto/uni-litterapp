@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/messageCardView"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardBackgroundColor="#43A047"
@@ -31,11 +31,12 @@
             android:id="@+id/textViewMitemTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textViewMitemViews"
+            android:layout_below="@id/textViewMitemKeeps"
             android:layout_centerInParent="true"
-            android:padding="12dp"
+            android:paddingBottom="30dp"
             android:text="title"
-            android:textSize="18sp" />
+            android:textColor="#000000"
+            android:textSize="20sp" />
 
 
         <TextView
@@ -50,11 +51,12 @@
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapViewMitem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:layout_below="@id/textViewMitemTitle"
             android:layout_centerInParent="true"
-            tools:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/textViewMitemComments"
@@ -63,7 +65,8 @@
             android:layout_alignParentRight="true"
             android:paddingTop="4dp"
             android:paddingRight="4dp"
-            android:text="Comments: 0" />
+            android:text="Comments: 0"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textViewMitemKeeps"
@@ -73,7 +76,8 @@
             android:layout_alignParentRight="true"
             android:paddingTop="4dp"
             android:paddingRight="4dp"
-            android:text="Keeps: 0" />
+            android:text="Keeps: 0"
+            android:textColor="#000000" />
 
         <TextView
             android:id="@+id/textViewMitemViews"
@@ -83,7 +87,9 @@
             android:layout_alignParentRight="true"
             android:paddingTop="4dp"
             android:paddingRight="4dp"
-            android:text="Views: 0" />
+            android:text="Views: 0"
+            app:layout_constraintGuide_percent="0.3"
+            android:textColor="#000000" />
 
 
     </RelativeLayout>

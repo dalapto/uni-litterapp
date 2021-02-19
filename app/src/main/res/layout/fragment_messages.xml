@@ -28,37 +28,41 @@
             android:id="@+id/chipGroup"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingLeft="8dp"
             android:paddingTop="8dp"
-            android:paddingRight="8dp"
-            app:chipSpacingHorizontal="16dp">
+            app:chipSpacingHorizontal="8dp">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipOwn"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
+                android:checked="false"
                 android:text="My Messages"
-                app:checkedIconEnabled="true" />
+                app:checkedIconEnabled="true"
+                app:checkedIconTint="#039BE5"
+                app:chipBackgroundColor="#944691B5" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipKept"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
+                android:checked="false"
                 android:text="Kept Messages"
-                app:checkedIconEnabled="true" />
+                app:checkedIconEnabled="true"
+                app:checkedIconTint="#FB8C00"
+                app:chipBackgroundColor="#8DB38245" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipSeen"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
+                android:checked="false"
                 android:text="Seen Messages"
-                app:checkedIconVisible="true" />
+                app:checkedIconTint="#43A047"
+                app:checkedIconVisible="true"
+                app:chipBackgroundColor="#9543A047" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipUnseen"
@@ -67,7 +71,9 @@
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="Unseen Messages"
-                app:checkedIconVisible="true" />
+                app:checkedIconTint="#43A047"
+                app:checkedIconVisible="true"
+                app:chipBackgroundColor="#8143A047" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
