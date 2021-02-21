@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -37,6 +39,7 @@ import kotlin.collections.ArrayList
 class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private val TAG : String = "ViewMessage"
     private lateinit var frameLayoutMain: FrameLayout
+    private lateinit var viewLayout: ConstraintLayout
     private lateinit var backButton: Button
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switch: Switch
@@ -66,6 +69,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         msg = (activity as MainActivity?)!!.getMessageDetails()!!
+        viewLayout = view.findViewById(R.id.fragmentViewMessage)
         commentsButton = view.findViewById(R.id.buttonViewComments)
         commentsButton.setOnClickListener(this)
         switch = view.findViewById(R.id.switchKeep)
@@ -89,6 +93,12 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
+        db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener {
+            doc -> if (doc.data?.get("kept") as Boolean) {
+            viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
+            switch.isChecked = true
+            }
+        }
         db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 title.text = msg.title
@@ -125,13 +135,9 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
 
 
     override fun onClick(v: View?) {
-
-        Log.i(TAG, "CLICKED")
         when (v?.id) {
             R.id.buttonBackView -> {
-                Log.i(TAG, "BACK CLICKED")
-                (db.collection("messages").document(msg.title.toString())).update("views",(1+msg.views).toLong())
-                val details = (activity as MainActivity?)!!.resetMessage()
+                (activity as MainActivity?)!!.resetMessage()
                 viewPager.visibility = View.VISIBLE
                 appBarLayout.visibility = View.VISIBLE
                 newMessageButton.visibility = View.VISIBLE
@@ -158,11 +164,14 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         when (buttonView?.id) {
             R.id.switchKeep -> {
                 if (isChecked) {
-                    Log.i(TAG, "KEEP CHECKED")
+                    viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
                     switchkeeptext.text = "Keep Message"
-
+                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
+                    db.collection("messages").document(msg.title!!).update("keeps",(1+msg.keeps).toLong())
                 } else {
-                    Log.i(TAG, "LEAVE CHECKED")
+                    viewLayout.setBackgroundColor(Color.parseColor("#49A84B"))
+                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
+                    db.collection("messages").document(msg.title!!).update("keeps",(msg.keeps-1).toLong())
                     switchkeeptext.text = "Leave Message"
                 }
             }

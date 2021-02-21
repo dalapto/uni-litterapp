@@ -1,15 +1,23 @@
 package com.s1755183.litter
 
 import android.location.Location
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 var currentUser: User = User("","",LatLng(0.0,0.0))
 
 fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
-    return sqrt((messageLoc.latitude - currentLoc.latitude).pow(2) + (messageLoc.longitude - currentLoc.longitude).pow(2)) <= maxDistance
+
+    return maxDistance > haversineDistance(messageLoc,currentLoc)
+}
+
+fun haversineDistance(messageLoc :LatLng, currentLoc :LatLng): Double {
+    val a = sin(((messageLoc.latitude-currentLoc.latitude) * (Math.PI/180))/2) * sin(((messageLoc.latitude-currentLoc.latitude) * (Math.PI/180))/2) +
+                    cos((messageLoc.latitude)* (Math.PI/180)) * cos((currentLoc.latitude)* (Math.PI/180)) *
+                    sin((messageLoc.longitude-currentLoc.longitude) * (Math.PI/180)/2) * sin((messageLoc.longitude-currentLoc.longitude) * (Math.PI/180)/2)
+    return 6371 * (2 * atan2(sqrt(a), sqrt(1-a)))
 }
 
 fun locationToLngLat(location: Location): LatLng {

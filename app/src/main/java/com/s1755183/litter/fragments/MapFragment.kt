@@ -183,10 +183,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private fun checkProximity() {
         for (msg in messages_states) {
             if (msg.value < 2) {
-                if (checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.0045)) {
-                    val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.00245)
+                if (checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.49 )) {
+                    val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.17459)
                     val messagestate = MessageState(title = msg.key, seen = proximity)
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.key).set(messagestate)
+                    db.collection("messages").document(msg.key).update("views",(1+messages[msg.key]!!.views).toLong())
                 }
             }
         }

@@ -41,7 +41,7 @@ class MessageAdapter(private val messages: ArrayList<Message>, private val messa
                 holder.card.setCardBackgroundColor(Color.parseColor("#E91E88E5")) //blue
             }
             3 -> {
-                holder.card.setCardBackgroundColor(Color.parseColor("#FFFB8C00")) //orange
+                holder.card.setCardBackgroundColor(Color.parseColor("#C1802E")) //orange
             }
             2 -> {
                 holder.card.setCardBackgroundColor(Color.parseColor("#49A84B")) //green
