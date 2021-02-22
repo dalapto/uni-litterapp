@@ -74,6 +74,7 @@ class MainActivity :  AppCompatActivity() {
     private var newmessage : Message? = null
     private var imageuri : Uri? = null
 
+
     fun saveMessageDetails(title: String, text: String?, anonymous: Boolean, image: String?) {
         newmessage = Message(title = title, text = text, anonymous = anonymous, image = image)
     }

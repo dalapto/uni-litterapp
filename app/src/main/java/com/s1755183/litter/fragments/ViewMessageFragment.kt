@@ -61,9 +61,9 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private lateinit var storage: FirebaseStorage
     private lateinit var storageReference: StorageReference
     private lateinit var msg: Message
+    private var keepers: Int = 0
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var comments_list: ArrayList<Comment> = ArrayList<Comment>()
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,6 +112,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                 title.text = msg.title
                 time.text = msg.time
                 keeps.text = "Keeps " + document.data?.get("keeps").toString()
+                keepers = (document.data?.get("keeps") as Long).toInt()
                 viewcount.text = "Views " + document.data?.get("views").toString()
                 commentsButton.text = " " + document.data?.get("comments").toString() + " Comments"
                 if (document.data?.get("text").toString() == "") {
@@ -180,17 +181,25 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                 if (isChecked) {
                     viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
                     switchkeeptext.text = "Keep Message"
-                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
-                    db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept+1)
-                    db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got+1)
-                    db.collection("messages").document(msg.title!!).update("keeps",(1+msg.keeps).toLong())
+                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener { doc ->
+                        if (!(doc.data?.get("kept") as Boolean)) {
+                            db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept+1)
+                            db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got+1)
+                            db.collection("messages").document(msg.title!!).update("keeps",(1+keepers).toLong())
+                            db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
+                        }
+                    }
                 } else {
                     viewLayout.setBackgroundColor(Color.parseColor("#49A84B"))
-                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
-                    db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept-1)
-                    db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got-1)
-                    db.collection("messages").document(msg.title!!).update("keeps",(msg.keeps-1).toLong())
                     switchkeeptext.text = "Leave Message"
+                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener { doc ->
+                        if (doc.data?.get("kept") as Boolean) {
+                            db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept-1)
+                            db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got-1)
+                            db.collection("messages").document(msg.title!!).update("keeps",(keepers-1).toLong())
+                            db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
+                        }
+                    }
                 }
             }
         }

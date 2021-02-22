@@ -2,24 +2,23 @@ package com.s1755183.litter.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
 
 
-class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallback, View.OnClickListener {
+class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallback, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private lateinit var logoutbutton: Button
     private lateinit var email: TextView
@@ -43,10 +42,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
     private lateinit var seenCheck: CheckBox
     private lateinit var unseenHelp: ImageButton
     private lateinit var unseenCheck: CheckBox
+    private lateinit var sMapView: MapView
     private lateinit var sMap: GoogleMap
     private val TAG: String = "SettingsFragment"
     private lateinit var auth: FirebaseAuth
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private lateinit var closeCirc: Circle
+    private lateinit var farCirc: Circle
+    private lateinit var markerOwn: Marker
+    private lateinit var markerKept: Marker
+    private lateinit var markerSeen: Marker
+    private lateinit var markerAlmostSeen: Marker
+    private lateinit var markerUnseen: Marker
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,9 +76,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
                 commentsGot.text =  "Comments on my messages: "+ currentUser.comments_got.toString()
             }
         }
-        val mapFragmentLoad = childFragmentManager.findFragmentById(R.id.mapViewSettings) as? SupportMapFragment
-        mapFragmentLoad?.getMapAsync(this)
-
         logoutbutton = view.findViewById(R.id.buttonLogout)
         logoutbutton.setOnClickListener(this)
         email = view.findViewById(R.id.textViewEmail)
@@ -83,8 +87,37 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
         viewsGot = view.findViewById(R.id.textViewMyViews)
         keepsGot = view.findViewById(R.id.textViewMyKeeps)
         commentsGot = view.findViewById(R.id.textViewMyComments)
+        revealCheck = view.findViewById(R.id.checkBoxReveal)
+        revealCheck.setOnCheckedChangeListener(this)
+        seeCheck = view.findViewById(R.id.checkBoxSeeCircle)
+        seeCheck.setOnCheckedChangeListener(this)
+        ownCheck = view.findViewById(R.id.checkBoxOwn)
+        ownCheck.setOnCheckedChangeListener(this)
+        keptCheck = view.findViewById(R.id.checkBoxKept)
+        keptCheck.setOnCheckedChangeListener(this)
+        seenCheck = view.findViewById(R.id.checkBoxSeen)
+        seenCheck.setOnCheckedChangeListener(this)
+        unseenCheck = view.findViewById(R.id.checkBoxUnseen)
+        unseenCheck.setOnCheckedChangeListener(this)
+        revealHelp = view.findViewById(R.id.imageButtonRevealHelp)
+        revealHelp.setOnClickListener(this)
+        seeHelp = view.findViewById(R.id.imageButtonSeeHelp)
+        seeHelp.setOnClickListener(this)
+        ownHelp = view.findViewById(R.id.imageButtonOwnHelp)
+        ownHelp.setOnClickListener(this)
+        keptHelp = view.findViewById(R.id.imageButtonKeptHelp)
+        keptHelp.setOnClickListener(this)
+        seenHelp = view.findViewById(R.id.imageButtonSeenHelp)
+        seenHelp.setOnClickListener(this)
+        unseenHelp = view.findViewById(R.id.imageButtonUnseenHelp)
+        unseenHelp.setOnClickListener(this)
         name.text =  currentUser.name
         email.text = auth.currentUser!!.email as String
+        sMapView = view.findViewById(R.id.mapViewSettings)
+        sMapView.isClickable = false
+        sMapView.onCreate(null)
+        sMapView.getMapAsync(this)
+        sMapView.onResume()
 
     }
 
@@ -105,15 +138,138 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
                 alertDialog.setCancelable(false)
                 alertDialog.show()
             }
+            R.id.imageButtonRevealHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"Reveal Range", "The range at which messages are partially revealed.")
+            }
+            R.id.imageButtonSeeHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"See/View Range", "The range at which messages can be viewed.")
+            }
+            R.id.imageButtonOwnHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"My Messages", "Messages you post on the map.")
+            }
+            R.id.imageButtonKeptHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"Kept Messages", "Messages you saw and kept.")
+            }
+            R.id.imageButtonSeenHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"Seen Messages", "Messages you can view on the map.")
+            }
+            R.id.imageButtonUnseenHelp -> {
+                UIHelper.displayAlert(this.requireContext(),"Unseen Messages", "Messages you have yet to view.")
+            }
         }
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         sMap = googleMap
-        val sydney = LatLng(-34.0, 151.0)
-        sMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        sMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        sMap.setMinZoomPreference(14.0f)
+        sMap.setMaxZoomPreference(14.0f)
+        sMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(40.6990, -74.0558), 14.0f))
+        sMap.addCircle(CircleOptions().center(LatLng(40.6990, -74.0558)).radius(20.0).fillColor(Color.parseColor("#3949AB")).strokeColor(Color.parseColor("#3949AB")))
+        if (ownCheck.isChecked) showOwn()
+        if (keptCheck.isChecked) showKept()
+        if (unseenCheck.isChecked) showUnseen()
+        if (seenCheck.isChecked) showSeen()
+        if (seeCheck.isChecked) showCloseCircle()
+        if (revealCheck.isChecked) showFarCircle()
+    }
+
+    fun showOwn() {
+        val mIconGenerator = IconGenerator(this.sMapView.context)
+        mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+        val iconOwn: Bitmap = mIconGenerator.makeIcon("My Message")
+        markerOwn = sMap.addMarker(MarkerOptions().position(LatLng(40.6952, -74.0514)).icon(BitmapDescriptorFactory.fromBitmap(iconOwn)))
+
+    }
+
+    fun showKept() {
+        val mIconGenerator = IconGenerator(this.sMapView.context)
+        mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+        val iconKept: Bitmap = mIconGenerator.makeIcon("Kept")
+        markerKept = sMap.addMarker(MarkerOptions().position(LatLng(40.7011, -74.0559)).icon(BitmapDescriptorFactory.fromBitmap(iconKept)))
+    }
+
+    fun showSeen() {
+        val mIconGenerator = IconGenerator(this.sMapView.context)
+        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+        val iconSeen: Bitmap = mIconGenerator.makeIcon("Seen")
+        markerSeen = sMap.addMarker(MarkerOptions().position(LatLng(40.7037, -74.0528)).icon(BitmapDescriptorFactory.fromBitmap(iconSeen)))
+    }
+
+    fun showUnseen() {
+        val mIconGenerator = IconGenerator(this.sMapView.context)
+        mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+        val iconNotQuite: Bitmap = mIconGenerator.makeIcon("Unseen")
+        markerAlmostSeen = sMap.addMarker(MarkerOptions().position(LatLng(40.6965, -74.0600)).icon(BitmapDescriptorFactory.fromBitmap(iconNotQuite)))
+        val iconUnseen: Bitmap = mIconGenerator.makeIcon("????")
+        markerUnseen = sMap.addMarker(MarkerOptions().position(LatLng(40.7045, -74.0603)).icon(BitmapDescriptorFactory.fromBitmap(iconUnseen)))
+    }
+
+    fun showFarCircle() {
+        farCirc = sMap.addCircle(CircleOptions().center(LatLng(40.6990, -74.0558)).radius(500.0).fillColor(Color.parseColor("#287198e7")).strokeColor(Color.parseColor("#087198e7")))
+    }
+
+    fun showCloseCircle() {
+        closeCirc = sMap.addCircle(CircleOptions().center(LatLng(40.6990, -74.0558)).radius(175.0).fillColor(Color.parseColor("#3271cce7")).strokeColor(Color.parseColor("#1071cce7")))
+    }
+
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        when (buttonView?.id) {
+            R.id.checkBoxReveal -> {
+                if (revealCheck.isChecked) {
+                    showFarCircle()
+               }
+                else {
+                    farCirc.remove()
+               }
+                displayRevealCircle = revealCheck.isChecked
+            }
+            R.id.checkBoxSeeCircle -> {
+                if (seeCheck.isChecked) {
+                    showCloseCircle()
+                }
+                else {
+                    closeCirc.remove()
+                }
+                displaySeeCircle = seeCheck.isChecked
+            }
+            R.id.checkBoxOwn -> {
+                if (ownCheck.isChecked) {
+                    showOwn()
+                }else {
+                    markerOwn.remove()
+                }
+                displayOwn = ownCheck.isChecked
+            }
+            R.id.checkBoxKept -> {
+                if (keptCheck.isChecked) {
+                    showKept()
+                }
+                else {
+                    markerKept.remove()
+                }
+                displayKept = keptCheck.isChecked
+            }
+            R.id.checkBoxSeen -> {
+                if (seenCheck.isChecked) {
+                    showSeen()
+                }
+                else {
+                    markerSeen.remove()
+                }
+                displaySeen = seenCheck.isChecked
+            }
+            R.id.checkBoxUnseen -> {
+                if (unseenCheck.isChecked) {
+                    showUnseen()
+                }
+                else {
+                    markerAlmostSeen.remove()
+                    markerUnseen.remove()
+                }
+                displayUnseen = unseenCheck.isChecked
+            }
+        }
     }
 
 }

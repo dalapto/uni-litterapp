@@ -49,13 +49,13 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
         adapter = MessageAdapter(current_messages, messages_states, this)
         messages_recycler.adapter = adapter
         chipOwn = view.findViewById(R.id.chipOwn)
-        chipOwn.setOnCheckedChangeListener{v, b -> filterMessages() }
+        chipOwn.setOnCheckedChangeListener{ _, _ -> filterMessages() }
         chipKept = view.findViewById(R.id.chipKept)
-        chipKept.setOnCheckedChangeListener{v, b -> filterMessages() }
+        chipKept.setOnCheckedChangeListener{ _, _ -> filterMessages() }
         chipSeen = view.findViewById(R.id.chipSeen)
-        chipSeen.setOnCheckedChangeListener{v, b -> filterMessages() }
+        chipSeen.setOnCheckedChangeListener{_, _ -> filterMessages() }
         chipUnseen = view.findViewById(R.id.chipUnseen)
-        chipUnseen.setOnCheckedChangeListener{v, b -> filterMessages() }
+        chipUnseen.setOnCheckedChangeListener{_, _ -> filterMessages() }
 
         db.collection("messages").orderBy("time")
                 .addSnapshotListener { value, e ->

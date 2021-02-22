@@ -171,6 +171,7 @@
                             android:layout_centerHorizontal="true"
                             android:text="What's on your Map"
                             android:textColor="#000000"
+                            android:paddingBottom="6dp"
                             android:textSize="24sp"
                             tools:layout_editor_absoluteX="30dp"
                             tools:layout_editor_absoluteY="172dp" />
@@ -235,20 +236,14 @@
                             tools:layout_editor_absoluteX="43dp"
                             tools:layout_editor_absoluteY="610dp" />
 
-                        <TextView
-                            android:id="@+id/textViewMapView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/textViewMapFilter"
-                            android:layout_toRightOf="@id/textViewMapFilter"
-                            android:text="How It Looks" />
 
                         <com.google.android.gms.maps.MapView
                             android:id="@+id/mapViewSettings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/textViewMapView"
-                            android:layout_toRightOf="@id/textViewMapFilter" />
+                            android:layout_width="180dp"
+                            android:layout_height="290dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@id/textViewMapFilter"
+                            />
 
                         <ImageButton
                             android:id="@+id/imageButtonRevealHelp"

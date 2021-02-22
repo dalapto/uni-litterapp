@@ -7,6 +7,12 @@ import com.google.firebase.Timestamp
 import kotlin.math.*
 
 var currentUser: User = User("","")
+var displayOwn : Boolean = true
+var displayKept : Boolean = true
+var displaySeen : Boolean = true
+var displayUnseen : Boolean = true
+var displayRevealCircle : Boolean = true
+var displaySeeCircle : Boolean = true
 
 fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
 

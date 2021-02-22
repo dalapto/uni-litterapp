@@ -182,8 +182,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private fun updateCircles() {
         closeCirc?.remove()
         farCirc?.remove()
-        closeCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(175.0).fillColor(Color.parseColor("#3271cce7")).strokeColor(Color.parseColor("#1071cce7")))
-        farCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(500.0).fillColor(Color.parseColor("#287198e7")).strokeColor(Color.parseColor("#087198e7")))
+        if (displaySeeCircle) closeCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(175.0).fillColor(Color.parseColor("#3271cce7")).strokeColor(Color.parseColor("#1071cce7")))
+        if (displayRevealCircle) farCirc = mMap.addCircle(CircleOptions().center(locationToLngLat(currentLocation)).radius(500.0).fillColor(Color.parseColor("#287198e7")).strokeColor(Color.parseColor("#087198e7")))
     }
     private fun checkProximity() {
         for (msg in messages_states) {
@@ -326,12 +326,40 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             else -> title
         }
         val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
-        val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
-        markers[marker.id] = marker
-        Log.i(TAG,marker.id)
-        Log.i(TAG,title)
-        markermessages[marker.id] = title
-        messages_states[title] = state
+        when (state) {
+            4 -> {
+                if (displayOwn) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+            3 -> {
+                if (displayKept) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+            2 -> {
+                if (displaySeen) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+            else -> {
+                if (displayUnseen) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+        }
     }
 
 
