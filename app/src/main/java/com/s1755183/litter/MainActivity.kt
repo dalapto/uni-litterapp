@@ -59,16 +59,13 @@ class MainActivity :  AppCompatActivity() {
             if (document != null) {
                 currentUser.id = document.data?.get("id") as String
                 currentUser.name = document.data?.get("name") as String
-                currentUser.location
-            }
-        }
-
-        db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
-            if (document != null) {
+                currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
+                currentUser.messages_kept = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
+                currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
                 Toast.makeText(this, "Welcome ${document.data?.get("name").toString()}!", Toast.LENGTH_LONG).show()
             }
         }
-
 
     }
 
@@ -89,15 +86,6 @@ class MainActivity :  AppCompatActivity() {
         newmessage?.comments = newmessage?.comments?.plus(1)!!
     }
 
-    fun incrementKeeps() {
-        newmessage?.keeps = newmessage?.keeps?.plus(1)!!
-    }
-
-    fun incrementViews() {
-        newmessage?.keeps = newmessage?.keeps?.plus(1)!!
-    }
-
-
     fun getMessageDetails() : Message? {
         return newmessage
     }
@@ -113,11 +101,6 @@ class MainActivity :  AppCompatActivity() {
     fun getImageURI(): Uri? {
         return imageuri
     }
-
-    fun deleteComment() {
-
-    }
-
 
 }
 

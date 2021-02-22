@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import kotlin.math.*
 
-var currentUser: User = User("","",LatLng(0.0,0.0))
+var currentUser: User = User("","")
 
 fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
 
@@ -27,7 +27,14 @@ fun locationToLngLat(location: Location): LatLng {
 data class User(
         var id: String,
         var name: String,
-        var location: LatLng
+        var location: LatLng = LatLng(0.0,0.0),
+        var messages_made: Int = 0,
+        var messages_kept: Int = 0,
+        var messages_seen: Int = 0,
+        var comments_made: Int = 0,
+        var views_got: Int = 0,
+        var keeps_got: Int = 0,
+        var comments_got: Int = 0
     )
 
 data class Message(

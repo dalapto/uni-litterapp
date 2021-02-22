@@ -34,6 +34,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
     private lateinit var comments_recycler: RecyclerView
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var msg: Message
+    private var comments_got : Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,8 +66,12 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                         comments_list.add(Comment(id = comment_id, author_id = comment_author_id, author_name = comment_author_name, time = comment_time, text = comment_text))
                     }
                     adapter.notifyDataSetChanged();
+                    db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
+                        if (document != null) {
+                            comments_got = (document.data?.get("comments_got") as Long).toInt()
+                        }
+                    }
                 }
-
     }
 
     fun insertItem(position: Int) {
@@ -84,6 +89,8 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                 builder.setPositiveButton("Delete") { dialog, which ->
                     db.collection("messages").document(msg.title.toString()).collection("comments").document(commentID).delete()
                     db.collection("messages").document(msg.title!!).update("comments", msg.comments-1)
+                    db.collection("users").document(currentUser.id).update("comments_made", currentUser.comments_made-1)
+                    db.collection("users").document(msg.author_id!!).update("comments_got", comments_got-1)
                     comments_list.removeAt(clickedItemPosition)
                     comments_recycler.adapter?.notifyItemRemoved(clickedItemPosition)
                     Toast.makeText(this.requireContext(),"Sucessfully deleted comment.", Toast.LENGTH_LONG).show()
@@ -122,6 +129,8 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                     val comment = Comment(id= randomKey, author_id = currentUser.id, author_name = currentUser.name, text = comment_text, time = Timestamp.now().toDate().toString())
                     db.collection("messages").document(msg.title!!).collection("comments").document(randomKey).set(comment)
                     db.collection("messages").document(msg.title!!).update("comments", msg.comments+1)
+                    db.collection("users").document(msg.author_id!!).update("comments_got", comments_got+1)
+                    db.collection("users").document(currentUser.id).update("comments_made", currentUser.comments_made+1)
                     (activity as MainActivity?)!!.incrementComments()
                     Toast.makeText(this.requireContext(), "Sucessfully commented on message.", Toast.LENGTH_LONG).show()
                     commentText.setText("")

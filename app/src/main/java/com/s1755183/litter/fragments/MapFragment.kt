@@ -102,6 +102,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         //mMap.setMinZoomPreference(15.0f)
                     }
                 }
+                db.collection("users").document(currentUser.id).get().addOnSuccessListener { document ->
+                    if (document != null) {
+                        currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
+                    }
+                }
             }
         }
     }
@@ -187,7 +192,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.17459)
                     val messagestate = MessageState(title = msg.key, seen = proximity)
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.key).set(messagestate)
-                    db.collection("messages").document(msg.key).update("views",(1+messages[msg.key]!!.views).toLong())
+                    if (proximity && msg.value < 2) {
+                        msg.setValue(2)
+                        db.collection("users").document(currentUser.id).update("messages_seen", currentUser.messages_seen+1)
+                        db.collection("messages").document(msg.key).update("views",(1+messages[msg.key]!!.views).toLong())
+                        db.collection("users").document(messages[msg.key]!!.author_id!!).get().addOnSuccessListener { document ->
+                            if (document != null && currentUser.id != messages[msg.key]!!.author_id!!) {
+                                val views_got = (document.data?.get("views_got") as Long).toInt()
+                                db.collection("users").document(messages[msg.key]!!.author_id!!).update("views_got",views_got+1)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -289,8 +304,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
             }
             true
         }
-
-
     }
 
 

@@ -267,8 +267,6 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                 appBarLayout.visibility = View.VISIBLE
                 newMessageButton.visibility = View.VISIBLE
                 frameLayoutMain.visibility = View.GONE
-
-
                 val randomKey : String = UUID.randomUUID().toString()
                 val storageRef: StorageReference = storageReference.child("images/$randomKey")
                 if (messagetext == "") {
@@ -281,6 +279,12 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
                 else {
                     val message = Message(image = "", text = messagetext, title = titletext, location = LatLng(currentLocation.latitude, currentLocation.longitude), author_id = auth.uid, anonymous = anonymouspost)
                     db.collection("messages").document(titletext).set(message)
+                }
+                db.collection("users").document(currentUser.id).get().addOnSuccessListener { doc ->
+                    if (doc != null) {
+                        val messages_made = (doc.data?.get("messages_made") as Long).toInt()
+                        db.collection("users").document(currentUser.id).update("messages_made",messages_made+1)
+                    }
                 }
                 Toast.makeText(this.requireContext(),"Sucessfully created new message.", Toast.LENGTH_LONG).show()
                 parentFragmentManager.beginTransaction().apply {

@@ -254,6 +254,12 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
                     newMessageButton.visibility = View.VISIBLE
                     frameLayoutMain.visibility = View.GONE
                     db.collection("messages").document(msg.title.toString()).delete()
+                    db.collection("users").document(currentUser.id).get().addOnSuccessListener { doc ->
+                        if (doc != null) {
+                            val messages_made = (doc.data?.get("messages_made") as Long).toInt()
+                            db.collection("users").document(currentUser.id).update("messages_made",messages_made-1)
+                        }
+                    }
                     parentFragmentManager.beginTransaction().apply {
                         replace(R.id.frameLayoutMain, Fragment())
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

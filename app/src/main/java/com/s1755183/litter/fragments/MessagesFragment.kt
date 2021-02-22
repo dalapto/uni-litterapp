@@ -68,7 +68,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
     }
 
     fun filterMessages() {
-        db.collection("messages").orderBy("time").get().addOnSuccessListener { snap ->
+        db.collection("messages").orderBy("keeps").orderBy("views").orderBy("comments").orderBy("time").get().addOnSuccessListener { snap ->
             if (snap != null) {
                 for (doc in snap.documents) {
                     if (doc != null) {
@@ -136,9 +136,9 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
                                         }
                                     }
                                 }
-                        adapter.notifyDataSetChanged()
                     }
                 }
+                adapter.notifyDataSetChanged()
             }
         }
     }
@@ -153,10 +153,10 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
         if (position > -1) {
             if (current_messages[position] == msg) {
                 current_messages.remove(msg)
+                messages_states.remove(msg.title.toString())
+                adapter.notifyItemRemoved(position)
             }
         }
-        messages_states.remove(msg.title.toString())
-        adapter.notifyItemRemoved(position)
     }
 
     override fun onMarkerClicked(title: String) {

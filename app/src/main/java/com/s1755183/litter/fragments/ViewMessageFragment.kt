@@ -93,6 +93,14 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewPager = requireActivity().findViewById(R.id.viewPager)
         appBarLayout = requireActivity().findViewById(R.id.appBarLayout)
         newMessageButton = requireActivity().findViewById(R.id.floatingActionButtonNewMessage)
+        db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
+            if (document != null) {
+                currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
+                currentUser.messages_kept = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
+                currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
+            }
+        }
         db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener {
             doc -> if (doc.data?.get("kept") as Boolean) {
             viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
@@ -163,14 +171,24 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when (buttonView?.id) {
             R.id.switchKeep -> {
+                var auth_keeps_got = 0
+                db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document ->
+                    if (document != null) {
+                        auth_keeps_got = (document.data?.get("keeps_got") as Long).toInt()
+                    }
+                }
                 if (isChecked) {
                     viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
                     switchkeeptext.text = "Keep Message"
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
+                    db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept+1)
+                    db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got+1)
                     db.collection("messages").document(msg.title!!).update("keeps",(1+msg.keeps).toLong())
                 } else {
                     viewLayout.setBackgroundColor(Color.parseColor("#49A84B"))
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
+                    db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept-1)
+                    db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got-1)
                     db.collection("messages").document(msg.title!!).update("keeps",(msg.keeps-1).toLong())
                     switchkeeptext.text = "Leave Message"
                 }
