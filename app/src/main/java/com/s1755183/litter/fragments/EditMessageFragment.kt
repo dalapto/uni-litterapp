@@ -140,6 +140,7 @@ class EditMessageFragment : Fragment(R.layout.fragment_edit_message), View.OnCli
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode==1 && resultCode== Activity.RESULT_OK && data != null && data.data != null) {
             imageMessage = data.data!!
+            oldimage = false
             imageView.setImageURI(imageMessage)
             tapimage2.visibility = View.INVISIBLE
             Log.i(TAG,(imageMessage != null).toString())

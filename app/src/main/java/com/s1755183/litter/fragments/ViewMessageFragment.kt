@@ -186,6 +186,8 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                             db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept+1)
                             db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got+1)
                             db.collection("messages").document(msg.title!!).update("keeps",(1+keepers).toLong())
+                            keepers++
+                            keeps.text = "Keeps " + (keepers).toString()
                             db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
                         }
                     }
@@ -198,6 +200,8 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                             db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got-1)
                             db.collection("messages").document(msg.title!!).update("keeps",(keepers-1).toLong())
                             db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
+                            keepers--
+                            keeps.text = "Keeps " + (keepers).toString()
                         }
                     }
                 }

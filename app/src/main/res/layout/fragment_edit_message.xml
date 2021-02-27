@@ -20,36 +20,10 @@
         app:iconSize="36dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.949" />
-
-    <TextView
-        android:id="@+id/textViewEditKeeps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Keeps 0"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.847"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.314" />
-
-    <TextView
-        android:id="@+id/textViewEditMessageViewcount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Views 0"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.154"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.314" />
+        app:layout_constraintVertical_bias="0.989" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -91,22 +65,9 @@
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.155" />
-
-    <TextView
-        android:id="@+id/textViewEditMessageAuthor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.198" />
+        app:layout_constraintVertical_bias="0.131" />
 
     <TextView
         android:id="@+id/textViewEditMessageTime"
@@ -117,7 +78,19 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.127" />
+        app:layout_constraintVertical_bias="0.102" />
+
+    <TextView
+        android:id="@+id/textViewEditMessageAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -125,7 +98,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.34" />
+        app:layout_constraintGuide_percent="0.32" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline6"
@@ -133,7 +106,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.3425" />
+        app:layout_constraintGuide_percent="0.3225" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline12"
@@ -141,7 +114,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.35" />
+        app:layout_constraintGuide_percent="0.325" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline13"
@@ -149,7 +122,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.7375" />
+        app:layout_constraintGuide_percent="0.83" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline11"
@@ -157,7 +130,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.73" />
+        app:layout_constraintGuide_percent="0.825" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline14"
@@ -165,7 +138,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.735" />
+        app:layout_constraintGuide_percent="0.8275" />
 
     <CheckBox
         android:id="@+id/checkBoxEditPost"
@@ -175,9 +148,65 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.24" />
+        app:layout_constraintVertical_bias="0.213" />
+
+    <TextView
+        android:id="@+id/textViewEditMessageViewcount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Views 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.288" />
+
+    <TextView
+        android:id="@+id/textViewEditKeeps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Keeps 0"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.288" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="65dp"
+        android:layout_height="27dp"
+        android:text="Image"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.615"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.285" />
+
+    <Switch
+        android:id="@+id/switchEditImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Text"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.429"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.285"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -191,35 +220,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline9"
         app:layout_constraintTop_toTopOf="@+id/guideline14"
         app:layout_constraintVertical_bias="1.0" />
-
-    <Switch
-        android:id="@+id/switchEditImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Text"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.425"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.311"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="65dp"
-        android:layout_height="27dp"
-        android:text="Image"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.612"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.311" />
 
     <FrameLayout
         android:id="@+id/frameNewMessageContent"
@@ -262,10 +262,10 @@
         app:icon="@android:drawable/stat_sys_upload"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.794"
+        app:layout_constraintHorizontal_bias="0.798"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.811" />
+        app:layout_constraintVertical_bias="0.896" />
 
     <Button
         android:id="@+id/buttonDelete"
@@ -276,10 +276,10 @@
         app:icon="@android:drawable/ic_menu_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.265"
+        app:layout_constraintHorizontal_bias="0.268"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.815" />
+        app:layout_constraintVertical_bias="0.895" />
 
     <Button
         android:id="@+id/buttonEditMessageBack"
@@ -291,12 +291,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.046" />
+        app:layout_constraintVertical_bias="0.023" />
 
     <TextView
         android:id="@+id/textViewTapImage2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:clickable="false"
         android:text="Tap here to add your image!"
         android:textSize="24sp"

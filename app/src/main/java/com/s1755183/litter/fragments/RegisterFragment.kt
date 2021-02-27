@@ -63,8 +63,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register), View.OnClickListe
                             auth.createUserWithEmailAndPassword(email2, password2).addOnCompleteListener(this.requireActivity(), OnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     Log.i(TAG, "sucessful register")
-                                    val user = User(auth.uid!!, username, LatLng(7.7,7.7))
-                                    db.collection("users").document(auth.uid!!).set(user).addOnSuccessListener { Log.i(TAG,"DocumentSnapshot added with ID: ${auth.uid!!}") }
+                                    db.collection("users").document(auth.uid!!).set(User(auth.uid!!, username)).addOnSuccessListener { Log.i(TAG,"DocumentSnapshot added with ID: ${auth.uid!!}") }
                                     UIHelper.hideProgress(progressBar)
                                     FirebaseAuth.getInstance().signOut()
                                     Toast.makeText(this.requireContext(),"Sucessfully created new account.",Toast.LENGTH_LONG).show()

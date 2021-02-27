@@ -49,10 +49,10 @@
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.052" />
+        app:layout_constraintVertical_bias="0.038" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline5"
@@ -60,7 +60,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.34" />
+        app:layout_constraintGuide_percent="0.29" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline6"
@@ -68,7 +68,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.3425" />
+        app:layout_constraintGuide_percent="0.2925" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline12"
@@ -76,7 +76,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.35" />
+        app:layout_constraintGuide_percent="0.295" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline13"
@@ -84,7 +84,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.8225" />
+        app:layout_constraintGuide_percent="0.8725" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline11"
@@ -92,7 +92,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.81" />
+        app:layout_constraintGuide_percent="0.865" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline14"
@@ -100,7 +100,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:visibility="visible"
-        app:layout_constraintGuide_percent="0.82" />
+        app:layout_constraintGuide_percent="0.87" />
 
     <CheckBox
         android:id="@+id/checkBoxViewPost"
@@ -112,20 +112,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.202" />
-
-    <TextView
-        android:id="@+id/textViewNewAuthor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="From Author"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.161" />
+        app:layout_constraintVertical_bias="0.166" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -138,7 +125,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline9"
         app:layout_constraintTop_toTopOf="@+id/guideline14"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textViewTime"
@@ -147,10 +134,10 @@
         android:text="TIME"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.105"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.022" />
+        app:layout_constraintVertical_bias="0.009" />
 
     <Switch
         android:id="@+id/switchImage"
@@ -160,10 +147,10 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintHorizontal_bias="0.425"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.288"
+        app:layout_constraintVertical_bias="0.242"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <TextView
@@ -176,10 +163,23 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintHorizontal_bias="0.612"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.288" />
+        app:layout_constraintVertical_bias="0.242" />
+
+    <TextView
+        android:id="@+id/textViewNewAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From Author"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.127" />
 
     <FrameLayout
         android:id="@+id/frameNewMessageContent"
@@ -223,7 +223,7 @@
         app:layout_constraintHorizontal_bias="0.715"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.91" />
+        app:layout_constraintVertical_bias="0.976" />
 
     <Button
         android:id="@+id/buttonMessageCancel"
@@ -236,7 +236,7 @@
         app:layout_constraintHorizontal_bias="0.272"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.909" />
+        app:layout_constraintVertical_bias="0.976" />
 
     <TextView
         android:id="@+id/textViewTapImage"
