@@ -130,6 +130,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
                 builder.setMessage("Are you sure you want to log out?")
                 builder.setPositiveButton("Logout") { dialog, which ->
                     FirebaseAuth.getInstance().signOut()
+                    auth.signOut()
                     startActivity(intent)
                     this.requireActivity().finish()
                 }
