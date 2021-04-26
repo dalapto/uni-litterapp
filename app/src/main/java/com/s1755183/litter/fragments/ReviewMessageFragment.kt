@@ -186,7 +186,7 @@ class ReviewMessageFragment : Fragment(R.layout.fragment_review_message), OnMapR
         mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
         val iconBitmap : Bitmap = mIconGenerator.makeIcon(markertext)
         val temp = mMap.addMarker(
-                MarkerOptions().position(marker).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).title("Are you happy putting your message here?")
+                MarkerOptions().position(marker).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)).title("Do you wish to post your message?")
         )
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker))
         return temp

@@ -275,7 +275,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         mMap.setOnMarkerClickListener { marker ->
             Log.i(TAG, "MARKER CLICKED")
             if (messages_states[markermessages[marker.id]]!! < 2) {
-                marker.title ="Too far away to read this..."
+                marker.title ="You are too far away to read this, move closer!"
                 marker.showInfoWindow()
             }
             else {

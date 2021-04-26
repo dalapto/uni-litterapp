@@ -16,7 +16,6 @@ class CommentAdapter(private val comments: ArrayList<Comment>, private val mList
         fun onViewClicked(clickedViewId: Int, clickedItemPosition: Int,commentID: String)
     }
 
-
     override fun onBindViewHolder(holder: CommentHolder, position: Int) {
         val item = comments[position]
         holder.time.text = item.time.toString()
@@ -29,17 +28,11 @@ class CommentAdapter(private val comments: ArrayList<Comment>, private val mList
         else {
             holder.deletebutton.visibility = View.INVISIBLE
         }
-
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.comment_item, parent, false)
         return CommentHolder(view)
     }
-
-
-
 }

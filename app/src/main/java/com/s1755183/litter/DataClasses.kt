@@ -15,7 +15,6 @@ var displayRevealCircle : Boolean = true
 var displaySeeCircle : Boolean = true
 
 fun checkDistance(messageLoc :LatLng, currentLoc :LatLng, maxDistance : Double): Boolean {
-
     return maxDistance > haversineDistance(messageLoc,currentLoc)
 }
 

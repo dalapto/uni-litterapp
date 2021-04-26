@@ -44,7 +44,7 @@
                             android:paddingBottom="8dp"
                             android:text="USERNAME PLACEHOLDER"
                             android:textAlignment="viewStart"
-                            android:textColor="#000000"
+                            android:textColor="#FFFFFF"
                             android:textSize="18sp" />
 
                         <TextView
@@ -56,6 +56,7 @@
                             android:paddingBottom="16dp"
                             android:text="EMAIL PLACEHOLDER"
                             android:textAlignment="viewStart"
+                            android:textColor="#FFFFFF"
                             android:textSize="18sp" />
 
                         <TextView
@@ -66,7 +67,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Messages Posted: 0"
-                            android:textColor="#000000" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewTotalKept"
@@ -76,7 +77,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Messages Kept: 0"
-                            android:textColor="#000000" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewTotalSeen"
@@ -86,7 +87,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Messages Seen: 0"
-                            android:textColor="#000000" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewTotalComments"
@@ -96,7 +97,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Comments Made: 0"
-                            android:textColor="#0E0D0D" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewMyViews"
@@ -106,7 +107,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Views on My Messages: 0"
-                            android:textColor="#0C0707" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewMyKeeps"
@@ -116,7 +117,7 @@
                             android:layout_centerHorizontal="true"
                             android:padding="6dp"
                             android:text="Keeps on My Messages: 0"
-                            android:textColor="#050202" />
+                            android:textColor="#FFFFFF" />
 
                         <TextView
                             android:id="@+id/textViewMyComments"
@@ -127,7 +128,7 @@
                             android:paddingTop="8dp"
                             android:paddingBottom="16dp"
                             android:text="Comments on My Messages: 0"
-                            android:textColor="#050202" />
+                            android:textColor="#FFFFFF" />
 
                         <Button
                             android:id="@+id/buttonLogout"
@@ -169,9 +170,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
-                            android:text="What's on your Map"
-                            android:textColor="#000000"
                             android:paddingBottom="6dp"
+                            android:text="What's on your Map"
+                            android:textColor="#FFFFFF"
                             android:textSize="24sp"
                             tools:layout_editor_absoluteX="30dp"
                             tools:layout_editor_absoluteY="172dp" />
@@ -183,6 +184,7 @@
                             android:layout_below="@id/textViewMapFilter"
                             android:checked="true"
                             android:text="Reveal Range"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="30dp"
                             tools:layout_editor_absoluteY="309dp" />
 
@@ -193,6 +195,7 @@
                             android:layout_below="@id/checkBoxReveal"
                             android:checked="true"
                             android:text="See Range"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="30dp"
                             tools:layout_editor_absoluteY="379dp" />
 
@@ -203,6 +206,7 @@
                             android:layout_below="@id/checkBoxSeeCircle"
                             android:checked="true"
                             android:text="My Messages"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="43dp"
                             tools:layout_editor_absoluteY="667dp" />
 
@@ -213,6 +217,7 @@
                             android:layout_below="@id/checkBoxOwn"
                             android:checked="true"
                             android:text="Kept Messages"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="33dp"
                             tools:layout_editor_absoluteY="443dp" />
 
@@ -223,6 +228,7 @@
                             android:layout_below="@id/checkBoxKept"
                             android:checked="true"
                             android:text="Seen Messages"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="72dp"
                             tools:layout_editor_absoluteY="518dp" />
 
@@ -233,6 +239,7 @@
                             android:layout_below="@id/checkBoxSeen"
                             android:checked="true"
                             android:text="Unseen Messages"
+                            android:textColor="#FFFFFF"
                             tools:layout_editor_absoluteX="43dp"
                             tools:layout_editor_absoluteY="610dp" />
 

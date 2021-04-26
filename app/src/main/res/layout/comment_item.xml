@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="#FFFFFF"
-    app:cardBackgroundColor="#017E7D"
+    app:cardBackgroundColor="#007E7D"
     app:cardCornerRadius="6dp"
     app:cardElevation="6dp">
 
@@ -40,7 +40,8 @@
 
                 android:backgroundTint="#94FFFFFF"
                 android:paddingTop="0dp"
-                android:text="time" />
+                android:text="time"
+                android:textColor="#D5D5D5" />
 
             <TextView
                 android:id="@+id/textViewCommentText"
@@ -50,7 +51,7 @@
                 android:layout_centerInParent="true"
 
                 android:text="text"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textSize="18sp" />
 
 
@@ -58,10 +59,12 @@
                 android:id="@+id/textViewCommentAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:layout_below="@id/textViewCommentText"
+                android:layout_centerInParent="true"
                 android:paddingTop="4dp"
-                android:text="author" />
+                android:text="author"
+                android:textColor="#DCDCDC"
+                android:textColorHint="#CCCCCC" />
 
 
         </RelativeLayout>
