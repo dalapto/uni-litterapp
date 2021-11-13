@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.MainActivity
+import com.s1755183.litter.MessageStates
 import com.s1755183.litter.R
 import com.s1755183.litter.fragments.EditMessageFragment
 import com.s1755183.litter.fragments.MapFragment
@@ -34,7 +35,7 @@ class MessageHolder(v: View, private val mListener: MessageHolder.FragmentRecycl
     val card: CardView = v.findViewById(R.id.messageCardView)
     var mMap: GoogleMap? = null
     lateinit var title2: String
-    var mstate: Int = 0
+    var mstate: MessageStates = MessageStates.UNSEEN
 
     interface FragmentRecyclerViewListener {
         fun onMarkerClicked(title: String)
@@ -50,7 +51,7 @@ class MessageHolder(v: View, private val mListener: MessageHolder.FragmentRecycl
         mMap = newmap
         Log.i("MHOLDER", title.text.toString())
         mMap?.setOnMarkerClickListener { marker ->
-            if (marker != null && mstate > 1) {
+            if (marker != null && (mstate != MessageStates.UNSEEN && mstate != MessageStates.PARTIAL_SEEN &&  mstate != MessageStates.FOLLOWED_PARTIAL && mstate != MessageStates.FOLLOWED_UNSEEN)) {
                 Log.i("MHOLDER", title2)
                 mListener.onMarkerClicked(title2)
             }
@@ -58,14 +59,16 @@ class MessageHolder(v: View, private val mListener: MessageHolder.FragmentRecycl
         }
     }
 
-    fun createMarker(location: LatLng, state: Int?, icontitle: String) {
+    fun createMarker(location: LatLng, state: MessageStates?, icontitle: String) {
         val mIconGenerator = IconGenerator(this.map.context)
         if (state != null) {
             mstate = state
         }
         when (state) {
-            4 -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
-            3 -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.OWN -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+            MessageStates.FOLLOWED_SEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.FOLLOWED_PARTIAL -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.FOLLOWED_UNSEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
             else -> mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
         }
         val iconBitmap: Bitmap = mIconGenerator.makeIcon(icontitle)

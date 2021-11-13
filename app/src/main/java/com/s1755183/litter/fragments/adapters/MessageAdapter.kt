@@ -9,9 +9,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.google.firebase.firestore.FirebaseFirestore
 import com.s1755183.litter.Message
+import com.s1755183.litter.MessageStates
 import com.s1755183.litter.R
 
-class MessageAdapter(private val messages: ArrayList<Message>, private val messages_states: HashMap<String, Int>, private val mListener: MessageHolder.FragmentRecyclerViewListener): RecyclerView.Adapter<MessageHolder>() {
+class MessageAdapter(private val messages: ArrayList<Message>, private val messages_states: HashMap<String, MessageStates>, private val mListener: MessageHolder.FragmentRecyclerViewListener): RecyclerView.Adapter<MessageHolder>() {
 
 
     override fun getItemCount() = messages.size
@@ -37,16 +38,19 @@ class MessageAdapter(private val messages: ArrayList<Message>, private val messa
             }
         }
         when (messages_states[item.title]) {
-            4 -> {
+            MessageStates.OWN -> {
                 holder.card.setCardBackgroundColor(Color.parseColor("#E91E88E5")) //blue
             }
-            3 -> {
+            MessageStates.FOLLOWED_SEEN -> {
                 holder.card.setCardBackgroundColor(Color.parseColor("#C1802E")) //orange
             }
-            2 -> {
-                holder.card.setCardBackgroundColor(Color.parseColor("#49A84B")) //green
+            MessageStates.FOLLOWED_PARTIAL -> {
+                holder.card.setCardBackgroundColor(Color.parseColor("#C1802E")) //orange
             }
-            1 -> {
+            MessageStates.FOLLOWED_UNSEEN -> {
+                holder.card.setCardBackgroundColor(Color.parseColor("#C1802E")) //orange
+            }
+            MessageStates.PARTIAL_SEEN -> {
                 holder.card.setCardBackgroundColor(Color.parseColor("#49A84B")) //green
                 holder.title.text = "?".repeat(item.title.toString().length / 2)+item.title.toString().drop(item.title.toString().length / 2)
             }

@@ -85,7 +85,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
+//                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
             }
@@ -100,8 +100,8 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
             if (document != null) {
                 title.text = msg.title
                 time.text = msg.time
-                keeps.text = "Keeps " + document.data?.get("keeps").toString()
-                followers = (document.data?.get("keeps") as Long).toInt()
+//                keeps.text = "Keeps " + document.data?.get("keeps").toString()
+//                followers = (document.data?.get("followers") as Long).toInt()
                 viewcount.text = "Views " + document.data?.get("views").toString()
                 commentsButton.text = " " + document.data?.get("comments").toString() + " Comments"
                 if (document.data?.get("text").toString() == "") {

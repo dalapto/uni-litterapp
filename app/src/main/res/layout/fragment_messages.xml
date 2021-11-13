@@ -49,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:checked="false"
                 android:text="Following"
+                android:visibility="gone"
                 app:checkedIconEnabled="true"
                 app:checkedIconTint="#FB8C00"
                 app:chipBackgroundColor="#8DB38245" />

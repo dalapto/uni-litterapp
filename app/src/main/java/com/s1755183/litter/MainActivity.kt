@@ -55,7 +55,8 @@ class MainActivity :  AppCompatActivity() {
                 currentUser.id = document.data?.get("id") as String
                 currentUser.name = document.data?.get("name") as String
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.followed_authors = (document.data?.get("followed_authors") as Long).toInt()
+                currentUser.followers = (document.data?.get("followers") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
                 Toast.makeText(this, "Welcome ${document.data?.get("name").toString()}!", Toast.LENGTH_LONG).show()

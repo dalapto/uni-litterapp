@@ -30,7 +30,8 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
     private var current_messages : ArrayList<Message> = ArrayList<Message>()
     private var all_messages : HashMap<String, Message> = HashMap<String, Message>()
     private lateinit var messages_recycler: RecyclerView
-    private var messages_states : HashMap<String, Int> = HashMap<String, Int>()
+    private var messages_states : HashMap<String, MessageStates> = HashMap<String, MessageStates>()
+    private var following : HashSet<String> = HashSet<String>()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private lateinit var adapter : MessageAdapter
     private lateinit var frameLayoutMain: FrameLayout
@@ -61,6 +62,13 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener
                     }
+                    db.collection("users").document(currentUser.id).collection("following").get().addOnSuccessListener { follow_result ->
+                        val following_list = follow_result.documents.toMutableList()
+                        following.clear()
+                        for (followed_author in following_list) {
+                            following.add(followed_author.data?.get("author_id") as String)
+                        }
+                    }
                     filterMessages()
                 }
     }
@@ -78,7 +86,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
                         val text = doc.data!!["text"] as String
                         val time = doc.data!!["time"].toString()
                         val views = (doc.data!!["views"] as Long).toInt()
-                        val keeps = (doc.data!!["keeps"] as Long).toInt()
+//                        val keeps = (doc.data!!["keeps"] as Long).toInt()
                         val comments = (doc.data!!["comments"] as Long).toInt()
                         val anonymous = doc.data!!["anonymous"] as Boolean
                         val msg = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, views = views, anonymous = anonymous, comments = comments)
@@ -89,49 +97,39 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
                                 .addOnSuccessListener { documents ->
                                     if (!documents.isEmpty) {
                                         for (doc2 in documents) {
-                                            if (doc2.data["kept"] as Boolean) {
-                                                messages_states[title] = 3
-                                                if (chipKept.isChecked) {
-                                                    insertItem(msg)
-                                                } else {
-                                                    removeItem(msg, position)
-                                                }
+                                            if (doc2.data["seen"] as Boolean) {
+                                                messages_states[title] = if (following.contains(msg.author_id.toString())) MessageStates.FOLLOWED_SEEN else MessageStates.SEEN
                                             } else {
-                                                if (doc2.data["seen"] as Boolean) {
-                                                    messages_states[title] = 2
-                                                    if (chipSeen.isChecked) {
-                                                        insertItem(msg)
-                                                    } else {
-                                                        removeItem(msg, position)
-                                                    }
-                                                } else {
-                                                    messages_states[title] = 1
-                                                    if (chipUnseen.isChecked) {
-                                                        insertItem(msg)
-                                                    } else {
-                                                        removeItem(msg, position)
-                                                    }
-                                                }
+                                                messages_states[title] = if (following.contains(msg.author_id.toString())) MessageStates.FOLLOWED_PARTIAL else MessageStates.PARTIAL_SEEN
                                             }
                                         }
-                                    } else {
+                                    }
+                                    else {
                                         if (currentUser.id == author) {
-                                            messages_states[title] = 4
-                                            if (chipOwn.isChecked) {
-                                                Log.i(TAG,title)
-                                                insertItem(msg)
-                                            } else {
-                                                removeItem(msg, position)
-                                            }
+                                            messages_states[title] = MessageStates.OWN
+                                        } else {
+                                            messages_states[title] = if (following.contains(msg.author_id.toString())) MessageStates.FOLLOWED_UNSEEN else MessageStates.UNSEEN
                                         }
-                                        else {
-                                            messages_states[title] = 0
-                                            if (chipUnseen.isChecked) {
-                                                insertItem(msg)
-                                            } else {
-                                                removeItem(msg, position)
-                                            }
-                                        }
+                                    }
+                                    if (messages_states[title] == MessageStates.UNSEEN && chipUnseen.isChecked) {
+                                        insertItem(msg)
+                                    } else {
+                                        removeItem(msg, position)
+                                    }
+                                    if (messages_states[title] == MessageStates.OWN && chipOwn.isChecked ) {
+                                        insertItem(msg)
+                                    } else {
+                                        removeItem(msg, position)
+                                    }
+                                    if (messages_states[title] == MessageStates.SEEN && chipSeen.isChecked) {
+                                        insertItem(msg)
+                                    } else {
+                                        removeItem(msg, position)
+                                    }
+                                    if ((messages_states[title] == MessageStates.FOLLOWED_SEEN || messages_states[title] == MessageStates.FOLLOWED_PARTIAL || messages_states[title] == MessageStates.FOLLOWED_UNSEEN) && chipKept.isChecked) {
+                                        insertItem(msg)
+                                    } else {
+                                        removeItem(msg, position)
                                     }
                                 }
                     }
@@ -172,7 +170,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
             }
         }
         else {
-            if (messages_states[title]!! > 1) {
+            if (messages_states[title]!! != MessageStates.FOLLOWED_UNSEEN && messages_states[title]!! != MessageStates.UNSEEN && messages_states[title]!! != MessageStates.FOLLOWED_PARTIAL && messages_states[title]!! != MessageStates.PARTIAL_SEEN) {
                 (activity as MainActivity?)!!.saveMessage(all_messages[title]!!)
                 parentFragmentManager.beginTransaction().apply {
                     replace(R.id.frameLayoutMain,EditMessageFragment())
@@ -184,4 +182,3 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
         }
     }
 }
-

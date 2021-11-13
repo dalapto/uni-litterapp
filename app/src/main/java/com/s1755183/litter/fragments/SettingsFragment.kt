@@ -61,18 +61,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
         db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.followed_authors = (document.data?.get("followed_authors") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
                 currentUser.views_got = (document.data?.get("views_got") as Long).toInt()
-                currentUser.followers = (document.data?.get("keeps_got") as Long).toInt()
+                currentUser.followers = (document.data?.get("followers") as Long).toInt()
                 currentUser.comments_got = (document.data?.get("comments_got") as Long).toInt()
                 messagesMade.text =  "Messages Posted: " + currentUser.messages_made.toString()
-                messagesKept.text =  "Messages Kept: "+ currentUser.followed_authors.toString()
+                messagesKept.text =  "Following: "+ currentUser.followed_authors.toString()
                 messagesSeen.text =  "Messages Seen: "+ currentUser.messages_seen.toString()
                 commentsMade.text = "Comments Made: "+ currentUser.comments_made.toString()
                 viewsGot.text =  "Views on my messages: "+ currentUser.views_got.toString()
-                keepsGot.text =  "Keeps on my messages: "+ currentUser.followers.toString()
+                keepsGot.text =  "Followers: "+ currentUser.followers.toString()
                 commentsGot.text =  "Comments on my messages: "+ currentUser.comments_got.toString()
             }
         }
@@ -149,7 +149,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
                 UIHelper.displayAlert(this.requireContext(),"My Messages", "Messages you post on the map.")
             }
             R.id.imageButtonKeptHelp -> {
-                UIHelper.displayAlert(this.requireContext(),"Kept Messages", "Messages you saw and kept.")
+                UIHelper.displayAlert(this.requireContext(),"Followed Messages", "Messages made by authors you are currently following.")
             }
             R.id.imageButtonSeenHelp -> {
                 UIHelper.displayAlert(this.requireContext(),"Seen Messages", "Messages you can view on the map.")
@@ -186,7 +186,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
     fun showKept() {
         val mIconGenerator = IconGenerator(this.sMapView.context)
         mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
-        val iconKept: Bitmap = mIconGenerator.makeIcon("Kept")
+        val iconKept: Bitmap = mIconGenerator.makeIcon("Following")
         markerKept = sMap.addMarker(MarkerOptions().position(LatLng(40.7011, -74.0559)).icon(BitmapDescriptorFactory.fromBitmap(iconKept)))
     }
 

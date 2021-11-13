@@ -50,7 +50,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private var following : HashSet<String> = HashSet<String>()
     private var our_messages : HashMap<String, Message> = HashMap<String, Message>()
     private var markermessages : HashBiMap<String, String> = HashBiMap.create()
-    private var messages_states : HashMap<String, MessageState> = HashMap<String, MessageState>()
+    private var messages_states : HashMap<String, MessageStates> = HashMap<String, MessageStates>()
     private lateinit var frameLayoutMain: FrameLayout
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var viewPager: ViewPager
@@ -126,6 +126,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                 following.clear()
                 for (followed_author in following_list) {
                     following.add(followed_author.data?.get("author_id") as String)
+                }
             }
             for (msg in messages) {
                 db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
@@ -134,37 +135,37 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         markers[markermessages.inverse()[msg.key]]!!.remove()
                         markers.remove(markermessages.inverse()[msg.key])
                         markermessages.inverse().remove(msg.key)
-                    } else {
-                        var mstate = MessageState.UNSEEN
+                    }
+                    else {
+                        var mstate = MessageStates.UNSEEN
                         db.collection("users").document(currentUser.id).collection("seenmessages").whereEqualTo("title", msg.key).get()
                                 .addOnSuccessListener { documents ->
                                     if (!documents.isEmpty) {
                                         for (doc in documents) {
                                             mstate = if (doc.data["seen"] as Boolean) {
-                                                (if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_SEEN else MessageState.SEEN)
+                                                (if (following.contains(msg.value.author_id)) MessageStates.FOLLOWED_SEEN else MessageStates.SEEN)
                                             } else {
-                                                if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_PARTIAL else MessageState.PARTIAL_SEEN
+                                                if (following.contains(msg.value.author_id)) MessageStates.FOLLOWED_PARTIAL else MessageStates.PARTIAL_SEEN
                                             }
                                         }
                                     }
                                     else {
-                                        mstate = if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_UNSEEN else MessageState.UNSEEN
+                                        mstate = if (following.contains(msg.value.author_id)) MessageStates.FOLLOWED_UNSEEN else MessageStates.UNSEEN
                                     }
                                     createMarker(msg.value.location, msg.key, state=mstate)
                                 }
                     }
                 }
             }
-                for (msg in our_messages) {
-                    db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
-                        if (!document.exists()) {
-                        our_messages.remove(msg.key)
-                        markers[markermessages.inverse()[msg.key]]!!.remove()
-                        markers.remove(markermessages.inverse()[msg.key])
-                        markermessages.inverse().remove(msg.key)
-                    } else {
-                        createMarker(msg.value.location, msg.key, state=MessageState.OWN)
-                    }
+            for (msg in our_messages) {
+                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                    if (!document.exists()) {
+                    our_messages.remove(msg.key)
+                    markers[markermessages.inverse()[msg.key]]!!.remove()
+                    markers.remove(markermessages.inverse()[msg.key])
+                    markermessages.inverse().remove(msg.key)
+                } else {
+                    createMarker(msg.value.location, msg.key, state=MessageStates.OWN)
                 }
             }
         }
@@ -179,17 +180,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     }
     private fun checkProximity() {
         for (msg in messages_states) {
-            if (msg.value == MessageState.PARTIAL_SEEN || msg.value == MessageState.UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL || msg.value == MessageState.FOLLOWED_UNSEEN) {
+            if (msg.value == MessageStates.PARTIAL_SEEN || msg.value == MessageStates.UNSEEN || msg.value == MessageStates.FOLLOWED_PARTIAL || msg.value == MessageStates.FOLLOWED_UNSEEN) {
                 if (checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.49 )) {
                     val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.17459)
                     val messagestate = MessageState(title = msg.key, seen = proximity)
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.key).set(messagestate)
-                    if (proximity && (msg.value == MessageState.PARTIAL_SEEN || msg.value == MessageState.UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL || msg.value == MessageState.FOLLOWED_UNSEEN)) {
-                        if (msg.value == MessageState.FOLLOWED_UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL) {
-                            msg.setValue(MessageState.FOLLOWED_SEEN)
+                    if (proximity && (msg.value == MessageStates.PARTIAL_SEEN || msg.value == MessageStates.UNSEEN || msg.value == MessageStates.FOLLOWED_PARTIAL || msg.value == MessageStates.FOLLOWED_UNSEEN)) {
+                        if (msg.value == MessageStates.FOLLOWED_UNSEEN || msg.value == MessageStates.FOLLOWED_PARTIAL) {
+                            msg.setValue(MessageStates.FOLLOWED_SEEN)
                         }
                         else {
-                            msg.setValue(MessageState.SEEN)
+                            msg.setValue(MessageStates.SEEN)
                         }
                         db.collection("users").document(currentUser.id).update("messages_seen", currentUser.messages_seen+1)
                         db.collection("messages").document(msg.key).update("views",(1+messages[msg.key]!!.views).toLong())
@@ -271,7 +272,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         mMap.isMyLocationEnabled = true
         mMap.setOnMarkerClickListener { marker ->
             Log.i(TAG, "MARKER CLICKED")
-            if (messages_states[markermessages[marker.id]]!! == MessageState.FOLLOWED_UNSEEN || messages_states[markermessages[marker.id]]!! == MessageState.FOLLOWED_PARTIAL || messages_states[markermessages[marker.id]]!! == MessageState.UNSEEN || messages_states[markermessages[marker.id]]!! == MessageState.PARTIAL_SEEN) {
+            if (messages_states[markermessages[marker.id]]!! == MessageStates.FOLLOWED_UNSEEN || messages_states[markermessages[marker.id]]!! == MessageStates.FOLLOWED_PARTIAL || messages_states[markermessages[marker.id]]!! == MessageStates.UNSEEN || messages_states[markermessages[marker.id]]!! == MessageStates.PARTIAL_SEEN) {
                 marker.title ="You are too far away to read this, move closer!"
                 marker.showInfoWindow()
             }
@@ -304,35 +305,32 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     }
 
 
-    enum class MessageState {
-        OWN, FOLLOWED_SEEN, FOLLOWED_PARTIAL, FOLLOWED_UNSEEN, SEEN, PARTIAL_SEEN, UNSEEN
-    }
 
 
-    private fun createMarker(position: LatLng, title: String = "New Marker", old_state: Int = 0, state: MessageState) {
+    private fun createMarker(position: LatLng, title: String = "New Marker", state: MessageStates) {
         if (markermessages.containsValue(title)) {
             markers[markermessages.inverse()[title]]?.remove()
             markermessages.inverse().remove(title)
         }
         val mIconGenerator = IconGenerator(this.requireContext())
         when (state) {
-            MessageState.OWN -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
-            MessageState.FOLLOWED_SEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
-            MessageState.FOLLOWED_PARTIAL -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
-            MessageState.FOLLOWED_UNSEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.OWN -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+            MessageStates.FOLLOWED_SEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.FOLLOWED_PARTIAL -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageStates.FOLLOWED_UNSEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
             else -> mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
 
         }
         var title2: String = when (state) {
-            MessageState.FOLLOWED_PARTIAL -> "?".repeat(title.length/2)+title.drop(title.length/2)
-            MessageState.PARTIAL_SEEN -> "?".repeat(title.length/2)+title.drop(title.length/2)
-            MessageState.FOLLOWED_UNSEEN -> "?".repeat(title.length)
-            MessageState.UNSEEN -> "?".repeat(title.length)
+            MessageStates.FOLLOWED_PARTIAL -> "?".repeat(title.length/2)+title.drop(title.length/2)
+            MessageStates.PARTIAL_SEEN -> "?".repeat(title.length/2)+title.drop(title.length/2)
+            MessageStates.FOLLOWED_UNSEEN -> "?".repeat(title.length)
+            MessageStates.UNSEEN -> "?".repeat(title.length)
             else -> title
         }
         val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
         when (state) {
-            MessageState.OWN -> {
+            MessageStates.OWN -> {
                 if (displayOwn) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
@@ -340,7 +338,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     messages_states[title] = state
                 }
             }
-            MessageState.FOLLOWED_SEEN -> {
+            MessageStates.FOLLOWED_SEEN -> {
                 if (displayFollowing) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
@@ -348,7 +346,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     messages_states[title] = state
                 }
             }
-            MessageState.FOLLOWED_PARTIAL -> {
+            MessageStates.FOLLOWED_PARTIAL -> {
                 if (displayFollowing) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
@@ -356,7 +354,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     messages_states[title] = state
                 }
             }
-            MessageState.FOLLOWED_UNSEEN -> {
+            MessageStates.FOLLOWED_UNSEEN -> {
                 if (displayFollowing) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
@@ -364,7 +362,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     messages_states[title] = state
                 }
             }
-            MessageState.SEEN -> {
+            MessageStates.SEEN -> {
                 if (displaySeen) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker

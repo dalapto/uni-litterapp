@@ -28,6 +28,11 @@ fun locationToLngLat(location: Location): LatLng {
     return LatLng(location.latitude, location.longitude)
 }
 
+enum class MessageStates {
+    OWN, FOLLOWED_SEEN, FOLLOWED_PARTIAL, FOLLOWED_UNSEEN, SEEN, PARTIAL_SEEN, UNSEEN
+}
+
+
 data class User(
     var id: String,
     var name: String,
