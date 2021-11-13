@@ -7,22 +7,14 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
-import androidx.fragment.app.FragmentContainer
-import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
@@ -35,17 +27,11 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.common.collect.BiMap
 import com.google.common.collect.HashBiMap
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.maps.android.ktx.model.circleOptions
 import com.google.maps.android.ui.IconGenerator
 import com.s1755183.litter.*
 import com.s1755183.litter.R
-import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.OnClickListener {
@@ -61,9 +47,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     private val TAG: String = "MapFragment"
     private var markers : HashMap<String, Marker> = HashMap<String, Marker>()
     private var messages : HashMap<String, Message> = HashMap<String, Message>()
+    private var following : HashSet<String> = HashSet<String>()
     private var our_messages : HashMap<String, Message> = HashMap<String, Message>()
     private var markermessages : HashBiMap<String, String> = HashBiMap.create()
-    private var messages_states : HashMap<String, Int> = HashMap<String, Int>()
+    private var messages_states : HashMap<String, MessageState> = HashMap<String, MessageState>()
     private lateinit var frameLayoutMain: FrameLayout
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var viewPager: ViewPager
@@ -124,15 +111,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     val text = doc.data?.get("text") as String
                     val time = doc.data?.get("time").toString()
                     val views = (doc.data?.get("views") as Long).toInt()
-                    val keeps = (doc.data?.get("keeps") as Long).toInt()
                     val comments = (doc.data?.get("comments") as Long).toInt()
                     val anonymous = doc.data?.get("anonymous") as Boolean
                     if (author == currentUser.id) {
-                        our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous, comments = comments)
+                        our_messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, views = views, anonymous = anonymous, comments = comments)
                     } else {
-                        messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous, comments = comments)
+                        messages[title] = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, views = views, anonymous = anonymous, comments = comments)
+                        }
                     }
                 }
+            }
+            db.collection("users").document(currentUser.id).collection("following").get().addOnSuccessListener { follow_result ->
+                val following_list = follow_result.documents.toMutableList()
+                following.clear()
+                for (followed_author in following_list) {
+                    following.add(followed_author.data?.get("author_id") as String)
             }
             for (msg in messages) {
                 db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
@@ -142,36 +135,35 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                         markers.remove(markermessages.inverse()[msg.key])
                         markermessages.inverse().remove(msg.key)
                     } else {
+                        var mstate = MessageState.UNSEEN
                         db.collection("users").document(currentUser.id).collection("seenmessages").whereEqualTo("title", msg.key).get()
                                 .addOnSuccessListener { documents ->
                                     if (!documents.isEmpty) {
                                         for (doc in documents) {
-                                            if (doc.data["kept"] as Boolean) {
-                                                createMarker(msg.value.location, msg.key, state=3)
+                                            mstate = if (doc.data["seen"] as Boolean) {
+                                                (if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_SEEN else MessageState.SEEN)
                                             } else {
-                                                if (doc.data["seen"] as Boolean) {
-                                                    createMarker(msg.value.location, msg.key, state=2)
-                                                } else {
-                                                    createMarker(msg.value.location, msg.key, state=1)
-                                                }
+                                                if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_PARTIAL else MessageState.PARTIAL_SEEN
                                             }
                                         }
-                                    } else {
-                                        createMarker(msg.value.location, msg.key, state=0)
                                     }
+                                    else {
+                                        mstate = if (following.contains(msg.value.author_id)) MessageState.FOLLOWED_UNSEEN else MessageState.UNSEEN
+                                    }
+                                    createMarker(msg.value.location, msg.key, state=mstate)
                                 }
                     }
                 }
             }
-            for (msg in our_messages) {
-                db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
-                    if (!document.exists()) {
+                for (msg in our_messages) {
+                    db.collection("messages").document(msg.key).get().addOnSuccessListener { document ->
+                        if (!document.exists()) {
                         our_messages.remove(msg.key)
                         markers[markermessages.inverse()[msg.key]]!!.remove()
                         markers.remove(markermessages.inverse()[msg.key])
                         markermessages.inverse().remove(msg.key)
                     } else {
-                        createMarker(msg.value.location, msg.key, state=4)
+                        createMarker(msg.value.location, msg.key, state=MessageState.OWN)
                     }
                 }
             }
@@ -187,13 +179,18 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     }
     private fun checkProximity() {
         for (msg in messages_states) {
-            if (msg.value < 2) {
+            if (msg.value == MessageState.PARTIAL_SEEN || msg.value == MessageState.UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL || msg.value == MessageState.FOLLOWED_UNSEEN) {
                 if (checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.49 )) {
                     val proximity = checkDistance(messages[msg.key]!!.location, locationToLngLat(currentLocation),0.17459)
                     val messagestate = MessageState(title = msg.key, seen = proximity)
                     db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.key).set(messagestate)
-                    if (proximity && msg.value < 2) {
-                        msg.setValue(2)
+                    if (proximity && (msg.value == MessageState.PARTIAL_SEEN || msg.value == MessageState.UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL || msg.value == MessageState.FOLLOWED_UNSEEN)) {
+                        if (msg.value == MessageState.FOLLOWED_UNSEEN || msg.value == MessageState.FOLLOWED_PARTIAL) {
+                            msg.setValue(MessageState.FOLLOWED_SEEN)
+                        }
+                        else {
+                            msg.setValue(MessageState.SEEN)
+                        }
                         db.collection("users").document(currentUser.id).update("messages_seen", currentUser.messages_seen+1)
                         db.collection("messages").document(msg.key).update("views",(1+messages[msg.key]!!.views).toLong())
                         db.collection("users").document(messages[msg.key]!!.author_id!!).get().addOnSuccessListener { document ->
@@ -274,7 +271,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
         mMap.isMyLocationEnabled = true
         mMap.setOnMarkerClickListener { marker ->
             Log.i(TAG, "MARKER CLICKED")
-            if (messages_states[markermessages[marker.id]]!! < 2) {
+            if (messages_states[markermessages[marker.id]]!! == MessageState.FOLLOWED_UNSEEN || messages_states[markermessages[marker.id]]!! == MessageState.FOLLOWED_PARTIAL || messages_states[markermessages[marker.id]]!! == MessageState.UNSEEN || messages_states[markermessages[marker.id]]!! == MessageState.PARTIAL_SEEN) {
                 marker.title ="You are too far away to read this, move closer!"
                 marker.showInfoWindow()
             }
@@ -307,27 +304,35 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
     }
 
 
+    enum class MessageState {
+        OWN, FOLLOWED_SEEN, FOLLOWED_PARTIAL, FOLLOWED_UNSEEN, SEEN, PARTIAL_SEEN, UNSEEN
+    }
 
 
-    private fun createMarker(position: LatLng, title: String = "New Marker", state: Int = 0) {
+    private fun createMarker(position: LatLng, title: String = "New Marker", old_state: Int = 0, state: MessageState) {
         if (markermessages.containsValue(title)) {
             markers[markermessages.inverse()[title]]?.remove()
             markermessages.inverse().remove(title)
         }
         val mIconGenerator = IconGenerator(this.requireContext())
         when (state) {
-            4 -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
-            3 -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageState.OWN -> mIconGenerator.setStyle(IconGenerator.STYLE_BLUE)
+            MessageState.FOLLOWED_SEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageState.FOLLOWED_PARTIAL -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
+            MessageState.FOLLOWED_UNSEEN -> mIconGenerator.setStyle(IconGenerator.STYLE_ORANGE)
             else -> mIconGenerator.setStyle(IconGenerator.STYLE_GREEN)
+
         }
         var title2: String = when (state) {
-            0 -> "?".repeat(title.length)
-            1 -> "?".repeat(title.length/2)+title.drop(title.length/2)
+            MessageState.FOLLOWED_PARTIAL -> "?".repeat(title.length/2)+title.drop(title.length/2)
+            MessageState.PARTIAL_SEEN -> "?".repeat(title.length/2)+title.drop(title.length/2)
+            MessageState.FOLLOWED_UNSEEN -> "?".repeat(title.length)
+            MessageState.UNSEEN -> "?".repeat(title.length)
             else -> title
         }
         val iconBitmap: Bitmap = mIconGenerator.makeIcon(title2)
         when (state) {
-            4 -> {
+            MessageState.OWN -> {
                 if (displayOwn) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
@@ -335,15 +340,31 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, View.On
                     messages_states[title] = state
                 }
             }
-            3 -> {
-                if (displayKept) {
+            MessageState.FOLLOWED_SEEN -> {
+                if (displayFollowing) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker
                     markermessages[marker.id] = title
                     messages_states[title] = state
                 }
             }
-            2 -> {
+            MessageState.FOLLOWED_PARTIAL -> {
+                if (displayFollowing) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+            MessageState.FOLLOWED_UNSEEN -> {
+                if (displayFollowing) {
+                    val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
+                    markers[marker.id] = marker
+                    markermessages[marker.id] = title
+                    messages_states[title] = state
+                }
+            }
+            MessageState.SEEN -> {
                 if (displaySeen) {
                     val marker = mMap.addMarker(MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromBitmap(iconBitmap)))
                     markers[marker.id] = marker

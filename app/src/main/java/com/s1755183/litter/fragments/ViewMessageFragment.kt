@@ -1,38 +1,27 @@
 package com.s1755183.litter.fragments
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Tasks
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.s1755183.litter.*
 import com.s1755183.litter.R
-import com.s1755183.litter.fragments.adapters.CommentAdapter
-import java.io.File
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -43,6 +32,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private lateinit var backButton: Button
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private lateinit var switch: Switch
+    private lateinit var toggleFollow: ToggleButton
     private lateinit var imageView: ImageView
     private lateinit var switchkeeptext: TextView
     private lateinit var viewcount: TextView
@@ -61,7 +51,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
     private lateinit var storage: FirebaseStorage
     private lateinit var storageReference: StorageReference
     private lateinit var msg: Message
-    private var keepers: Int = 0
+    private var followers: Int = 0
     private lateinit var linearLayoutManager: LinearLayoutManager
     private var comments_list: ArrayList<Comment> = ArrayList<Comment>()
 
@@ -72,14 +62,13 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         viewLayout = view.findViewById(R.id.fragmentViewMessage)
         commentsButton = view.findViewById(R.id.buttonViewComments)
         commentsButton.setOnClickListener(this)
-        switch = view.findViewById(R.id.switchKeep)
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         storageReference = storage.reference
         backButton = view.findViewById(R.id.buttonBackView)
         backButton.setOnClickListener(this)
-        switch = view.findViewById(R.id.switchKeep)
-        switch.setOnCheckedChangeListener(this)
+        toggleFollow = view.findViewById(R.id.toggleButtonFollow)
+        toggleFollow.setOnCheckedChangeListener(this)
         switchkeeptext = view.findViewById(R.id.textViewKeep)
         viewcount = view.findViewById(R.id.textViewMessageViewcount)
         keeps = view.findViewById(R.id.textViewKeeps)
@@ -96,23 +85,23 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
         db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.messages_kept = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
             }
         }
-        db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener {
-            doc -> if (doc.data?.get("kept") as Boolean) {
-            viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
-            switch.isChecked = true
-            }
-        }
+//        db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener {
+//            doc -> if (doc.data?.get("kept") as Boolean) {
+//            viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
+//            switch.isChecked = true
+//            }
+//        }
         db.collection("messages").document(msg.title!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 title.text = msg.title
                 time.text = msg.time
                 keeps.text = "Keeps " + document.data?.get("keeps").toString()
-                keepers = (document.data?.get("keeps") as Long).toInt()
+                followers = (document.data?.get("keeps") as Long).toInt()
                 viewcount.text = "Views " + document.data?.get("views").toString()
                 commentsButton.text = " " + document.data?.get("comments").toString() + " Comments"
                 if (document.data?.get("text").toString() == "") {
@@ -139,6 +128,12 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                     }
                 }
             }
+        }
+        db.collection("users").document(currentUser.id).collection("following").document(msg.author_id!!).get().addOnSuccessListener {
+                doc -> if (doc.data?.get("author_id").toString() == msg.author_id!!) {
+                    viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
+                    toggleFollow.isChecked = true
+                }
         }
     }
 
@@ -171,7 +166,7 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         when (buttonView?.id) {
-            R.id.switchKeep -> {
+            R.id.toggleButtonFollow -> {
                 var auth_keeps_got = 0
                 db.collection("users").document(msg.author_id!!).get().addOnSuccessListener { document ->
                     if (document != null) {
@@ -180,28 +175,24 @@ class ViewMessageFragment : Fragment(R.layout.fragment_view_message), View.OnCli
                 }
                 if (isChecked) {
                     viewLayout.setBackgroundColor(Color.parseColor("#C1802E"))
-                    switchkeeptext.text = "Keep Message"
-                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener { doc ->
-                        if (!(doc.data?.get("kept") as Boolean)) {
-                            db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept+1)
-                            db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got+1)
-                            db.collection("messages").document(msg.title!!).update("keeps",(1+keepers).toLong())
-                            keepers++
-                            keeps.text = "Keeps " + (keepers).toString()
-                            db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",true)
+                    db.collection("users").document(currentUser.id).collection("following").document(msg.author_id!!).get().addOnSuccessListener { doc ->
+                        if (doc != null) {
+                            db.collection("users").document(currentUser.id).update("followed_authors", currentUser.followed_authors+1)
+                            db.collection("users").document(msg.author_id!!).update("followers", auth_keeps_got+1)
+//                            db.collection("messages").document(msg.title!!).update("keeps",(1+followers).toLong())
+                            db.collection("users").document(currentUser.id).collection("following").document(msg.author_id!!).set(mapOf("author_id" to msg.author_id!!))
+                            followers++
                         }
                     }
                 } else {
                     viewLayout.setBackgroundColor(Color.parseColor("#49A84B"))
-                    switchkeeptext.text = "Leave Message"
-                    db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).get().addOnSuccessListener { doc ->
-                        if (doc.data?.get("kept") as Boolean) {
-                            db.collection("users").document(currentUser.id).update("messages_kept", currentUser.messages_kept-1)
-                            db.collection("users").document(msg.author_id!!).update("keeps_got", auth_keeps_got-1)
-                            db.collection("messages").document(msg.title!!).update("keeps",(keepers-1).toLong())
-                            db.collection("users").document(currentUser.id).collection("seenmessages").document(msg.title!!).update("kept",false)
-                            keepers--
-                            keeps.text = "Keeps " + (keepers).toString()
+                    db.collection("users").document(currentUser.id).collection("following").document(msg.author_id!!).get().addOnSuccessListener { doc ->
+                        if (doc != null) {
+                            db.collection("users").document(currentUser.id).update("followed_authors", currentUser.followed_authors-1)
+                            db.collection("users").document(msg.author_id!!).update("followers", auth_keeps_got-1)
+//                            db.collection("messages").document(msg.title!!).update("keeps",(followers-1).toLong())
+                            db.collection("users").document(currentUser.id).collection("following").document(msg.author_id.toString()).delete()
+                            followers--
                         }
                     }
                 }

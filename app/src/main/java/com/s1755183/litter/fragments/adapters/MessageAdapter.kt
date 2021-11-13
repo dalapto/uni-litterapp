@@ -21,7 +21,7 @@ class MessageAdapter(private val messages: ArrayList<Message>, private val messa
         val item = messages[position]
         holder.time.text = item.time.toString()
         holder.comments.text = "Comments: "+item.comments.toString()
-        holder.keeps.text = "Keeps: "+item.keeps.toString()
+//        holder.keeps.text = "Keeps: "+item.keeps.toString()
         holder.views.text = "Views: "+item.views.toString()
         holder.title.text = item.title.toString()
         holder.map.isClickable = false

@@ -1,14 +1,13 @@
 package com.s1755183.litter
 
 import android.location.Location
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import kotlin.math.*
 
 var currentUser: User = User("","")
 var displayOwn : Boolean = true
-var displayKept : Boolean = true
+var displayFollowing : Boolean = true
 var displaySeen : Boolean = true
 var displayUnseen : Boolean = true
 var displayRevealCircle : Boolean = true
@@ -30,16 +29,16 @@ fun locationToLngLat(location: Location): LatLng {
 }
 
 data class User(
-        var id: String,
-        var name: String,
-        var location: LatLng = LatLng(0.0,0.0),
-        var messages_made: Int = 0,
-        var messages_kept: Int = 0,
-        var messages_seen: Int = 0,
-        var comments_made: Int = 0,
-        var views_got: Int = 0,
-        var keeps_got: Int = 0,
-        var comments_got: Int = 0
+    var id: String,
+    var name: String,
+    var location: LatLng = LatLng(0.0,0.0),
+    var messages_made: Int = 0,
+    var followed_authors: Int = 0,
+    var messages_seen: Int = 0,
+    var comments_made: Int = 0,
+    var views_got: Int = 0,
+    var followers: Int = 0,
+    var comments_got: Int = 0
     )
 
 data class Message(
@@ -49,7 +48,7 @@ data class Message(
     var text: String? = null,
     var image: String? = null,
     var time: String = Timestamp.now().toDate().toString(),
-    var keeps: Int = 0,
+//    var keeps: Int = 0,
     var views: Int = 0,
     var comments: Int = 0,
     var anonymous: Boolean = true

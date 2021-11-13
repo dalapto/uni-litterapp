@@ -9,10 +9,8 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.chip.Chip
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.s1755183.litter.*
@@ -50,7 +48,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
         messages_recycler.adapter = adapter
         chipOwn = view.findViewById(R.id.chipOwn)
         chipOwn.setOnCheckedChangeListener{ _, _ -> filterMessages() }
-        chipKept = view.findViewById(R.id.chipKept)
+        chipKept = view.findViewById(R.id.chipFollowed)
         chipKept.setOnCheckedChangeListener{ _, _ -> filterMessages() }
         chipSeen = view.findViewById(R.id.chipSeen)
         chipSeen.setOnCheckedChangeListener{_, _ -> filterMessages() }
@@ -83,7 +81,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages), MessageHolder.Fra
                         val keeps = (doc.data!!["keeps"] as Long).toInt()
                         val comments = (doc.data!!["comments"] as Long).toInt()
                         val anonymous = doc.data!!["anonymous"] as Boolean
-                        val msg = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, keeps = keeps, views = views, anonymous = anonymous, comments = comments)
+                        val msg = Message(title = title, author_id = author, image = image, text = text, time = time, location = location2, views = views, anonymous = anonymous, comments = comments)
                         current_messages.clear()
                         val position = current_messages.indexOf(msg)
                         all_messages[title] = msg

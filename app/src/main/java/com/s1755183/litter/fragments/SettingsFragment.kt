@@ -61,18 +61,18 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
         db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
             if (document != null) {
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.messages_kept = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
                 currentUser.views_got = (document.data?.get("views_got") as Long).toInt()
-                currentUser.keeps_got = (document.data?.get("keeps_got") as Long).toInt()
+                currentUser.followers = (document.data?.get("keeps_got") as Long).toInt()
                 currentUser.comments_got = (document.data?.get("comments_got") as Long).toInt()
                 messagesMade.text =  "Messages Posted: " + currentUser.messages_made.toString()
-                messagesKept.text =  "Messages Kept: "+ currentUser.messages_kept.toString()
+                messagesKept.text =  "Messages Kept: "+ currentUser.followed_authors.toString()
                 messagesSeen.text =  "Messages Seen: "+ currentUser.messages_seen.toString()
                 commentsMade.text = "Comments Made: "+ currentUser.comments_made.toString()
                 viewsGot.text =  "Views on my messages: "+ currentUser.views_got.toString()
-                keepsGot.text =  "Keeps on my messages: "+ currentUser.keeps_got.toString()
+                keepsGot.text =  "Keeps on my messages: "+ currentUser.followers.toString()
                 commentsGot.text =  "Comments on my messages: "+ currentUser.comments_got.toString()
             }
         }
@@ -249,7 +249,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), OnMapReadyCallbac
                 else {
                     markerKept.remove()
                 }
-                displayKept = keptCheck.isChecked
+                displayFollowing = keptCheck.isChecked
             }
             R.id.checkBoxSeen -> {
                 if (seenCheck.isChecked) {

@@ -43,12 +43,12 @@
                 app:chipBackgroundColor="#944691B5" />
 
             <com.google.android.material.chip.Chip
-                android:id="@+id/chipKept"
+                android:id="@+id/chipFollowed"
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                android:text="Kept Messages"
+                android:text="Following"
                 app:checkedIconEnabled="true"
                 app:checkedIconTint="#FB8C00"
                 app:chipBackgroundColor="#8DB38245" />

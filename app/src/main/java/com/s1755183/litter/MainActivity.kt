@@ -3,21 +3,16 @@ package com.s1755183.litter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.s1755183.litter.fragments.MapFragment
 import com.s1755183.litter.fragments.MessagesFragment
-import com.s1755183.litter.fragments.NewMessageFragment
 import com.s1755183.litter.fragments.SettingsFragment
 import com.s1755183.litter.fragments.adapters.ViewPagerAdapter
 
@@ -60,7 +55,7 @@ class MainActivity :  AppCompatActivity() {
                 currentUser.id = document.data?.get("id") as String
                 currentUser.name = document.data?.get("name") as String
                 currentUser.messages_made = (document.data?.get("messages_made") as Long).toInt()
-                currentUser.messages_kept = (document.data?.get("messages_kept") as Long).toInt()
+                currentUser.followed_authors = (document.data?.get("messages_kept") as Long).toInt()
                 currentUser.messages_seen = (document.data?.get("messages_seen") as Long).toInt()
                 currentUser.comments_made = (document.data?.get("comments_made") as Long).toInt()
                 Toast.makeText(this, "Welcome ${document.data?.get("name").toString()}!", Toast.LENGTH_LONG).show()

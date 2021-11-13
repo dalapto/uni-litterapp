@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -65,7 +64,7 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                         Log.i(TAG, comments_list.size.toString())
                         comments_list.add(Comment(id = comment_id, author_id = comment_author_id, author_name = comment_author_name, time = comment_time, text = comment_text))
                     }
-                    adapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged()
                     db.collection("users").document(auth.uid!!).get().addOnSuccessListener { document ->
                         if (document != null) {
                             comments_got = (document.data?.get("comments_got") as Long).toInt()
@@ -74,10 +73,10 @@ class CommentsFragment : Fragment(R.layout.fragment_comments), View.OnClickListe
                 }
     }
 
-    fun insertItem(position: Int) {
-//        mExampleList.add(position, ExampleItem(R.drawable.ic_android, "New Item At Position$position", "This is Line 2"))
-//        mAdapter.notifyItemInserted(position)
-    }
+//    fun insertItem(position: Int) {
+////        mExampleList.add(position, ExampleItem(R.drawable.ic_android, "New Item At Position$position", "This is Line 2"))
+////        mAdapter.notifyItemInserted(position)
+//    }
 
 
     override fun onViewClicked(clickedViewID : Int, clickedItemPosition: Int, commentID: String) {
