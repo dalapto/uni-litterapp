@@ -282,7 +282,7 @@
 
         <ToggleButton
             android:id="@+id/toggleButtonFollow"
-            android:layout_width="103dp"
+            android:layout_width="113dp"
             android:layout_height="38dp"
             android:backgroundTint="#B7DF9A0D"
             android:button="@android:drawable/btn_star"
@@ -290,7 +290,7 @@
             android:textAllCaps="true"
             android:textOff="Follow"
             android:textOn="Unfollow"
-            android:textSize="8sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.093"
